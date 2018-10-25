@@ -92,7 +92,7 @@
      <string>Add text</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="save_button_3">
+   <widget class="QPushButton" name="save_btn">
     <property name="geometry">
      <rect>
       <x>70</x>
@@ -118,7 +118,7 @@
      <string>To ASCII</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="noise_button_3">
+   <widget class="QPushButton" name="noise_btn">
     <property name="geometry">
      <rect>
       <x>70</x>

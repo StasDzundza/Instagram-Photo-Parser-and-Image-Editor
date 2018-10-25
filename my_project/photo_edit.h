@@ -24,6 +24,10 @@ private slots:
 
     void on_swap_colors_button_clicked();
 
+    void on_add_text_button_clicked();
+
+    void on_to_ascii_button_clicked();
+
 private:
     Ui::photo_edit *ui;
     int count_of_changed_images = 0;
