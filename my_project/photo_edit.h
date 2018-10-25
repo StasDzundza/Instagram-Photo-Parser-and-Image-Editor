@@ -28,6 +28,12 @@ private slots:
 
     void on_to_ascii_button_clicked();
 
+    void on_save_btn_clicked();
+
+    void on_noise_btn_clicked();
+
+    void on_gray_level_3_valueChanged(int value);
+
 private:
     Ui::photo_edit *ui;
     int count_of_changed_images = 0;

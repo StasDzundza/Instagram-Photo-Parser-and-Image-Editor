@@ -183,3 +183,101 @@ void photo_edit::on_to_ascii_button_clicked()
         write<<endl;
     }
 }
+
+void photo_edit::on_save_btn_clicked()
+{
+    count_of_changed_images++;
+    QString filename_save = "photo_number" + QString::number(count_of_changed_images)+".jpg";
+    changed_img->save(filename_save);
+}
+
+void photo_edit::on_noise_btn_clicked()
+{
+    for(int i = 0; i < image_size.height();i++)
+    {
+        for(int j = 0; j < image_size.width();j++)
+        {
+            double rand_value = (double)(0.5-(rand()%100/100.0))*ui->noise_level->text().toDouble();
+            QColor clrCurrent( changed_img->pixel( j, i ) );
+            int r,g,b;
+            //if(clrCurrent.red() > 255-rand_value)
+            //r = 255;
+            //else
+            r = clrCurrent.red()+rand_value;
+            while(r>255)r-=256;
+            while(r<0)r+=256;
+            //if(clrCurrent.green() > 255-rand_value)
+            //g = 255;
+            //else
+            g = clrCurrent.green()+rand_value;
+            while(g>255)g-=256;
+            while(g<0)g+=256;
+            //if(clrCurrent.blue() > 255-rand_value)
+            //b = 255;
+            //else
+            b = clrCurrent.blue()+rand_value;
+            while(b>255)b-=256;
+            while(b<0)b+=256;
+            qDebug()<<r<<" "<<g<<" "<< b;
+            changed_img->setPixel(j,i,qRgb(r,g,b));
+        }
+    }
+    QPixmap pix(QPixmap::fromImage(*changed_img));
+    int w = pix.width();
+    int h = pix.height();
+    image_size = pix.size();
+    ui->image->resize(w,h);
+    ui->image->setPixmap(pix.scaled(w,h,Qt::KeepAspectRatio));
+}
+
+
+void photo_edit::on_gray_level_3_valueChanged(int value)
+{
+    ui->level_3->setText(QString::number(ui->gray_level_3->value()));
+    if(current_gray_level<value)
+    {
+        int diff = value-current_gray_level;
+        for(int k = 0; k < diff; k++)
+        {
+            for(int i = 0; i < image_size.height();i++)
+            {
+                for(int j = 0; j < image_size.width();j++)
+                {
+                    int rgb_sum = 0;
+                    QColor clrCurrent( changed_img->pixel( j, i ) );
+                    rgb_sum = rgb_sum+clrCurrent.red()+clrCurrent.green()+clrCurrent.blue();
+                    rgb_sum/=4;
+
+                    changed_img->setPixel(j,i,qRgb(rgb_sum,rgb_sum,rgb_sum));
+                }
+            }
+        }
+    }
+    else
+    {
+        changed_img->load(fileName);
+        for(int k = 0; k < value; k++)
+        {
+            for(int i = 0; i < image_size.height();i++)
+            {
+                for(int j = 0; j < image_size.width();j++)
+                {
+                    int rgb_sum = 0;
+                    QColor clrCurrent( changed_img->pixel( j, i ) );
+                    rgb_sum = rgb_sum+clrCurrent.red()+clrCurrent.green()+clrCurrent.blue();
+                    rgb_sum/=4;
+
+                    changed_img->setPixel(j,i,qRgb(rgb_sum,rgb_sum,rgb_sum));
+                }
+            }
+        }
+    }
+    current_gray_level = value;
+    QPixmap pix(QPixmap::fromImage(*changed_img));
+    int w = pix.width();
+    int h = pix.height();
+    image_size = pix.size();
+    ui->image->resize(w,h);
+    ui->image->setPixmap(pix.scaled(w,h,Qt::KeepAspectRatio));
+
+}

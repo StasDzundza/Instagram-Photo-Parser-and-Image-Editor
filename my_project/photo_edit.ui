@@ -131,7 +131,7 @@
      <string>Noise</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="lineEdit">
+   <widget class="QLineEdit" name="noise_level">
     <property name="geometry">
      <rect>
       <x>60</x>
