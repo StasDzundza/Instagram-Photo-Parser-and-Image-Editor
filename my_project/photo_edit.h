@@ -34,6 +34,8 @@ private slots:
 
     void on_gray_level_3_valueChanged(int value);
 
+    void on_open_photo_button_clicked();
+
 private:
     Ui::photo_edit *ui;
     int count_of_changed_images = 0;

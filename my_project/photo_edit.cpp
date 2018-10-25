@@ -14,30 +14,11 @@ photo_edit::photo_edit(QWidget *parent) :
     ui(new Ui::photo_edit)
 {
     ui->setupUi(this);
-    QFileDialog dialog(this);
-      //dialog.setNameFilter(tr("Images (*.png *.xpm *.jpg)"));
-      //dialog.setViewMode(QFileDialog::Detail);
-     fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
-                                                      "C:/",
-                                                      tr("Images (*.png *.xpm *.jpg)"));
-    //img = new QImage(":/res/lena_color.jpg");
-     original_img = new QImage(fileName);
-    QPixmap pix(QPixmap::fromImage(*original_img));
-    int w = pix.width();
-    int h = pix.height();
-    image_size = original_img->size();
-    ui->image->resize(w,h);
-    ui->image->setPixmap(pix.scaled(w,h,Qt::KeepAspectRatio));
+    original_img = nullptr;
+    changed_img = nullptr;
 
-    changed_img = new QImage(fileName);
-    //якщо б ми мали графік сцену
-     /*image_size = original_img->size();
-     graphic_scene = new QGraphicsScene();
-     graphic_scene->addPixmap(QPixmap::fromImage(*original_img));
-     ui->graphicsView->resize(image_size);
-     ui->graphicsView->setScene(graphic_scene);*/
 
-ui->gray_level_3->setMaximum(7);
+    ui->gray_level_3->setMaximum(7);
 }
 
 photo_edit::~photo_edit()
@@ -230,7 +211,6 @@ void photo_edit::on_noise_btn_clicked()
     ui->image->setPixmap(pix.scaled(w,h,Qt::KeepAspectRatio));
 }
 
-
 void photo_edit::on_gray_level_3_valueChanged(int value)
 {
     ui->level_3->setText(QString::number(ui->gray_level_3->value()));
@@ -280,4 +260,32 @@ void photo_edit::on_gray_level_3_valueChanged(int value)
     ui->image->resize(w,h);
     ui->image->setPixmap(pix.scaled(w,h,Qt::KeepAspectRatio));
 
+}
+
+void photo_edit::on_open_photo_button_clicked()
+{
+    QFileDialog dialog(this);
+      //dialog.setNameFilter(tr("Images (*.png *.xpm *.jpg)"));
+      //dialog.setViewMode(QFileDialog::Detail);
+     fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
+                                                      "C:/",
+                                                      tr("Images (*.png *.xpm *.jpg)"));
+    original_img = new QImage(fileName);
+    QPixmap pix(QPixmap::fromImage(*original_img));
+    int w = pix.width();
+    int h = pix.height();
+    image_size = original_img->size();
+    ui->image->resize(w,h);
+    ui->image->setPixmap(pix.scaled(w,h,Qt::KeepAspectRatio));
+
+    changed_img = new QImage(fileName);
+
+    //img = new QImage(":/res/lena_color.jpg");
+
+    //якщо б ми мали графік сцену
+     /*image_size = original_img->size();
+     graphic_scene = new QGraphicsScene();
+     graphic_scene->addPixmap(QPixmap::fromImage(*original_img));
+     ui->graphicsView->resize(image_size);
+     ui->graphicsView->setScene(graphic_scene);*/
 }
