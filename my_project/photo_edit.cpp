@@ -279,7 +279,7 @@ void photo_edit::on_open_photo_button_clicked()
     int h = pix.height();
     image_size = original_img->size();
     ui->image->resize(w,h);
-    ui->image->setPixmap(pix.scaled(w,h,Qt::KeepAspectRatio));
+    ui->image->setPixmap(pix.scaled(w,h,Qt::KeepAspectRatioByExpanding));
 
     changed_img = new QImage(fileName);
 
@@ -323,6 +323,17 @@ void photo_edit::on_transparency_button_clicked()
     fragment.fill(transparency_level);
 
     changed_img->setAlphaChannel(fragment);
+    QPixmap pix(QPixmap::fromImage(*changed_img));
+    int w = pix.width();
+    int h = pix.height();
+    image_size = pix.size();
+    ui->image->resize(w,h);
+    ui->image->setPixmap(pix.scaled(w,h,Qt::KeepAspectRatio));
+}
+
+void photo_edit::on_reset_button_clicked()
+{
+    changed_img->operator=(*original_img);
     QPixmap pix(QPixmap::fromImage(*changed_img));
     int w = pix.width();
     int h = pix.height();

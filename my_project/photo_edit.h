@@ -40,6 +40,8 @@ private slots:
 
     void on_transparency_button_clicked();
 
+    void on_reset_button_clicked();
+
 private:
     Ui::photo_edit *ui;
     int count_of_changed_images = 0;
