@@ -116,6 +116,8 @@ void photo_edit::on_add_text_button_clicked()
     painter.setFont(QFont("Tahoma", 12, QFont::Bold));
     QPen pen;
     QColor c;
+    c.setGreen(255);
+    c.setRed(255);
     pen.setColor(c);
     painter.setPen(pen);
     painter.drawText(changed_img->rect(), Qt::AlignCenter, QString("Text on photo"));
@@ -279,7 +281,7 @@ void photo_edit::on_open_photo_button_clicked()
     int h = pix.height();
     image_size = original_img->size();
     ui->image->resize(w,h);
-    ui->image->setPixmap(pix.scaled(w,h,Qt::KeepAspectRatioByExpanding));
+    ui->image->setPixmap(pix.scaled(w,h,Qt::IgnoreAspectRatio));
 
     changed_img = new QImage(fileName);
 
@@ -340,4 +342,15 @@ void photo_edit::on_reset_button_clicked()
     image_size = pix.size();
     ui->image->resize(w,h);
     ui->image->setPixmap(pix.scaled(w,h,Qt::KeepAspectRatio));
+}
+
+void photo_edit::on_scale_button_clicked()
+{
+    changed_img->scaled(ui->x_point->value(),ui->y_point->value());
+    QPixmap pix(QPixmap::fromImage(*changed_img));
+    int w = pix.width();
+    int h = pix.height();
+    image_size = pix.size();
+    ui->image->resize(w,h);
+    ui->image->setPixmap(pix.scaled(ui->x_point->value(),ui->y_point->value(),Qt::IgnoreAspectRatio));
 }
