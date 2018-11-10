@@ -19,7 +19,11 @@ photo_edit::photo_edit(QWidget *parent) :
 
 
     ui->gray_level_3->setMaximum(7);
+    ui->transparency_level->setMaximum(2.5);
+    ui->transparency_level->setMinimum(1.0);
+    ui->transparency_level->setSingleStep(0.1);
 }
+
 
 photo_edit::~photo_edit()
 {
@@ -304,6 +308,21 @@ void photo_edit::on_deep_sepia_button_clicked()
             changed_img->setPixel(j,i,qRgb(r,g,b));
         }
     }
+    QPixmap pix(QPixmap::fromImage(*changed_img));
+    int w = pix.width();
+    int h = pix.height();
+    image_size = pix.size();
+    ui->image->resize(w,h);
+    ui->image->setPixmap(pix.scaled(w,h,Qt::KeepAspectRatio));
+}
+
+void photo_edit::on_transparency_button_clicked()
+{
+    QImage fragment( changed_img->size(), QImage::Format_ARGB32 );
+    int transparency_level = ui->transparency_level->value()*100;
+    fragment.fill(transparency_level);
+
+    changed_img->setAlphaChannel(fragment);
     QPixmap pix(QPixmap::fromImage(*changed_img));
     int w = pix.width();
     int h = pix.height();
