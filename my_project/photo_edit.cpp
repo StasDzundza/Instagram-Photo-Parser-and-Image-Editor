@@ -114,12 +114,13 @@ void photo_edit::on_add_text_button_clicked()
     QPainter painter;
     painter.begin(changed_img);
     painter.setFont(QFont("Tahoma", 12, QFont::Bold));
+    painter.setPen(QPen(Qt::red));
     QPen pen;
     QColor c;
-    c.setGreen(255);
-    c.setRed(255);
+    //c.setGreen(255);
+    //c.setRed(255);
     pen.setColor(c);
-    painter.setPen(pen);
+    //painter.setPen(pen);
     painter.drawText(changed_img->rect(), Qt::AlignCenter, QString("Text on photo"));
     painter.end();
 
@@ -346,11 +347,64 @@ void photo_edit::on_reset_button_clicked()
 
 void photo_edit::on_scale_button_clicked()
 {
-    changed_img->scaled(ui->x_point->value(),ui->y_point->value());
+    changed_img->scaled(ui->x_point->value(),ui->y_point->value()).save("scaled_photo_number" + QString::number(count_of_changed_images)+".jpg");
     QPixmap pix(QPixmap::fromImage(*changed_img));
     int w = pix.width();
     int h = pix.height();
     image_size = pix.size();
     ui->image->resize(w,h);
     ui->image->setPixmap(pix.scaled(ui->x_point->value(),ui->y_point->value(),Qt::IgnoreAspectRatio));
+}
+
+void photo_edit::on_screen_button_clicked()
+{
+    QPixmap pixmap(this->size());
+      this->render(&pixmap, QPoint(), QRegion(this->rect()));
+      QPainter ptr(&pixmap);
+
+      QRect border(0,0,this->width() - 1, this->height() - 1);
+      //ptr.setBrush(QBrush(QColor(0,0,255,125)));
+      ptr.drawRect(border);
+
+     // ptr.setBrush(QBrush());
+      ptr.setPen(QPen(Qt::red));
+      ptr.drawRect(border);
+
+      pixmap.save("screen.png", 0, 100);
+}
+
+void photo_edit::on_draw_smile_button_clicked()
+{
+    QImage sourceImage;
+
+    int dx = (changed_img->width() - sourceImage.width())/2;
+    int dy = (changed_img->height() - sourceImage.height())/2;
+
+    switch (ui->smile_list->currentIndex())
+    {
+        case 0:
+        {
+            sourceImage.load(":/smiles/smiles/128smile1.png");
+            break;
+        }
+        case 1:
+        {
+            sourceImage.load(":/smiles/smiles/128smile2.png");
+            break;
+        }
+        case 2:
+        {
+            sourceImage.load(":/smiles/smiles/128smile3.png");
+            break;
+        }
+    }
+    QPainter p(changed_img);
+    p.drawImage(dx, dy, sourceImage);
+    p.end();
+    QPixmap pix(QPixmap::fromImage(*changed_img));
+    int w = pix.width();
+    int h = pix.height();
+    image_size = pix.size();
+    ui->image->resize(w,h);
+    ui->image->setPixmap(pix.scaled(w,h,Qt::KeepAspectRatio));
 }

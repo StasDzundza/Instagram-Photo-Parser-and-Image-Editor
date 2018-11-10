@@ -44,9 +44,13 @@ private slots:
 
     void on_scale_button_clicked();
 
+    void on_screen_button_clicked();
+
+    void on_draw_smile_button_clicked();
+
 private:
     Ui::photo_edit *ui;
-    int count_of_changed_images = 0;
+    int count_of_changed_images = 1;
     int current_gray_level = 0;
     QImage *original_img;
     QImage *changed_img;
