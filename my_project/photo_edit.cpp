@@ -75,7 +75,7 @@ void photo_edit::on_sepia_button_clicked()
         {
             double rgb_sum = 0;
             QColor clrCurrent( changed_img->pixel( j, i ) );
-            rgb_sum = 0.3*clrCurrent.red()+0.59*clrCurrent.green()+0.11*clrCurrent.blue();
+            rgb_sum = 0.3*(double)clrCurrent.red()+0.59*(double)clrCurrent.green()+0.11*(double)clrCurrent.blue();
             changed_img->setPixel(j,i,qRgb(rgb_sum+100,rgb_sum+50,rgb_sum));
         }
     }
@@ -199,7 +199,6 @@ void photo_edit::on_noise_btn_clicked()
             b = clrCurrent.blue()+rand_value;
             while(b>255)b-=256;
             while(b<0)b+=256;
-            qDebug()<<r<<" "<<g<<" "<< b;
             changed_img->setPixel(j,i,qRgb(r,g,b));
         }
     }
@@ -288,4 +287,27 @@ void photo_edit::on_open_photo_button_clicked()
      graphic_scene->addPixmap(QPixmap::fromImage(*original_img));
      ui->graphicsView->resize(image_size);
      ui->graphicsView->setScene(graphic_scene);*/
+}
+
+void photo_edit::on_deep_sepia_button_clicked()
+{
+
+    for(int i = 0; i < image_size.height();i++)
+    {
+        for(int j = 0; j < image_size.width();j++)
+        {
+            QColor clrCurrent( changed_img->pixel( j, i ) );
+            double r,g,b;
+            r = ((double)clrCurrent.red() * 0.393 + (double)clrCurrent.green() * 0.769 + (double)clrCurrent.blue() * 0.189 ) / 1.351;
+            g = ((double)clrCurrent.red() * 0.349 + (double)clrCurrent.green() * 0.686 + (double)clrCurrent.blue() * 0.168 ) / 1.351;
+            b = ((double)clrCurrent.red() * 0.272 + (double)clrCurrent.green() * 0.534 + (double)clrCurrent.blue() * 0.131 ) / 1.351;
+            changed_img->setPixel(j,i,qRgb(r,g,b));
+        }
+    }
+    QPixmap pix(QPixmap::fromImage(*changed_img));
+    int w = pix.width();
+    int h = pix.height();
+    image_size = pix.size();
+    ui->image->resize(w,h);
+    ui->image->setPixmap(pix.scaled(w,h,Qt::KeepAspectRatio));
 }
