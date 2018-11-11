@@ -48,6 +48,8 @@ private slots:
 
     void on_draw_smile_button_clicked();
 
+    void on_mirror_button_clicked();
+
 private:
     Ui::photo_edit *ui;
     int count_of_changed_images = 1;
@@ -57,6 +59,8 @@ private:
     QGraphicsScene *graphic_scene;
     QSize image_size;
     QString fileName;
+
+    QImage mirrored_image;
 };
 
 #endif // PHOTO_EDIT_H

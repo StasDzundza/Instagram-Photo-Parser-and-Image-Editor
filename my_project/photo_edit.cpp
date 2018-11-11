@@ -22,6 +22,8 @@ photo_edit::photo_edit(QWidget *parent) :
     ui->transparency_level->setMaximum(2.5);
     ui->transparency_level->setMinimum(1.0);
     ui->transparency_level->setSingleStep(0.1);
+
+    ui->horizontal_mirror->setChecked(true);
 }
 
 
@@ -274,7 +276,7 @@ void photo_edit::on_open_photo_button_clicked()
       //dialog.setNameFilter(tr("Images (*.png *.xpm *.jpg)"));
       //dialog.setViewMode(QFileDialog::Detail);
      fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
-                                                      "C:/",
+                                                      "F:/",
                                                       tr("Images (*.png *.xpm *.jpg)"));
     original_img = new QImage(fileName);
     QPixmap pix(QPixmap::fromImage(*original_img));
@@ -407,4 +409,27 @@ void photo_edit::on_draw_smile_button_clicked()
     image_size = pix.size();
     ui->image->resize(w,h);
     ui->image->setPixmap(pix.scaled(w,h,Qt::KeepAspectRatio));
+}
+
+void photo_edit::on_mirror_button_clicked()
+{
+    if(ui->vertical_mirror->isChecked())
+    {
+        mirrored_image = changed_img->mirrored(false,true);
+    }
+    if(ui->horizontal_mirror->isChecked())
+    {
+        mirrored_image = changed_img->mirrored(true,false);
+    }
+    if(ui->horizontal_mirror->isChecked()||ui->vertical_mirror->isChecked())
+    {
+        changed_img = &mirrored_image;
+        QPixmap pix(QPixmap::fromImage(*changed_img));
+        int w = pix.width();
+        int h = pix.height();
+        image_size = pix.size();
+        ui->image->resize(w,h);
+        ui->image->setPixmap(pix.scaled(w,h,Qt::KeepAspectRatio));
+    }
+
 }
