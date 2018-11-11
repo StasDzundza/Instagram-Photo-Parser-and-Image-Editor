@@ -2,7 +2,9 @@
 #define PHOTO_EDIT_H
 
 #include <QMainWindow>
-#include<QGraphicsScene>
+#include <QGraphicsScene>
+#include "paintscene.h"
+#include "photo_paint.h"
 namespace Ui {
 class photo_edit;
 }
@@ -50,6 +52,10 @@ private slots:
 
     void on_mirror_button_clicked();
 
+    void on_paint_button_clicked();
+
+signals:
+    void paint_object(QImage *image);
 private:
     Ui::photo_edit *ui;
     int count_of_changed_images = 1;
@@ -61,6 +67,11 @@ private:
     QString fileName;
 
     QImage mirrored_image;
+
+    paintScene *scene;
+    photo_paint *paint_window = nullptr;
+
+
 };
 
 #endif // PHOTO_EDIT_H

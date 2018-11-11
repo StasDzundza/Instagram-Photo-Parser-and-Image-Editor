@@ -9,6 +9,7 @@
 #include<random>
 #include<vector>
 #include<QTextStream>
+#include<QtSvg/QSvgGenerator>
 photo_edit::photo_edit(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::photo_edit)
@@ -24,6 +25,9 @@ photo_edit::photo_edit(QWidget *parent) :
     ui->transparency_level->setSingleStep(0.1);
 
     ui->horizontal_mirror->setChecked(true);
+
+   /* scene = new paintScene();       // Инициализируем графическую сцену
+    ui->graphicsView->setScene(scene); */ // Устанавливаем графическую сцену
 }
 
 
@@ -176,8 +180,8 @@ void photo_edit::on_to_ascii_button_clicked()
 
 void photo_edit::on_save_btn_clicked()
 {
-    count_of_changed_images++;
     QString filename_save = "photo_number" + QString::number(count_of_changed_images)+".jpg";
+    count_of_changed_images++;
     changed_img->save(filename_save);
 }
 
@@ -290,9 +294,12 @@ void photo_edit::on_open_photo_button_clicked()
 
     //img = new QImage(":/res/lena_color.jpg");
 
+
     //якщо б ми мали графік сцену
-     /*image_size = original_img->size();
-     graphic_scene = new QGraphicsScene();
+
+    /*changed_img = new QImage(fileName);
+     image_size = original_img->size();
+     graphic_scene = new paintScene();
      graphic_scene->addPixmap(QPixmap::fromImage(*original_img));
      ui->graphicsView->resize(image_size);
      ui->graphicsView->setScene(graphic_scene);*/
@@ -319,6 +326,12 @@ void photo_edit::on_deep_sepia_button_clicked()
     image_size = pix.size();
     ui->image->resize(w,h);
     ui->image->setPixmap(pix.scaled(w,h,Qt::KeepAspectRatio));
+
+    /*
+    graphic_scene = new QGraphicsScene();
+    graphic_scene->addPixmap(pix);
+    ui->graphicsView->resize(image_size);
+    ui->graphicsView->setScene(graphic_scene);*/
 }
 
 void photo_edit::on_transparency_button_clicked()
@@ -432,4 +445,11 @@ void photo_edit::on_mirror_button_clicked()
         ui->image->setPixmap(pix.scaled(w,h,Qt::KeepAspectRatio));
     }
 
+}
+
+void photo_edit::on_paint_button_clicked()
+{
+    paint_window = new photo_paint(this);
+    paint_window->show();
+    emit paint_object(changed_img);
 }

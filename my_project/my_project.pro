@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets
+QT       += core gui widgets svg
 
 TARGET = my_project
 TEMPLATE = app
@@ -25,15 +25,20 @@ CONFIG += c++11
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    photo_edit.cpp
+    photo_edit.cpp \
+    paintscene.cpp \
+    photo_paint.cpp
 
 HEADERS += \
         mainwindow.h \
-    photo_edit.h
+    photo_edit.h \
+    paintscene.h \
+    photo_paint.h
 
 FORMS += \
         mainwindow.ui \
-    photo_edit.ui
+    photo_edit.ui \
+    photo_paint.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

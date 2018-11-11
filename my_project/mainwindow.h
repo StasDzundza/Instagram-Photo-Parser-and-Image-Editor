@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include"photo_edit.h"
+
 namespace Ui {
 class MainWindow;
 }
