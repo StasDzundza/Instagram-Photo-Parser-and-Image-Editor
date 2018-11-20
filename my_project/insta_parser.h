@@ -24,7 +24,7 @@ public:
 private slots:
     void on_get_info_button_clicked();
     void replyFinished(QNetworkReply*reply);
-
+    void replyFinishedPhoto(QNetworkReply*);
 private:
     Ui::insta_parser *ui;
     static int count_images;
@@ -36,6 +36,7 @@ private:
     QNetworkRequest request_photo;
     QNetworkAccessManager *manager_photo;
 
+    QString current_nickname;
     vector<instagram_account*> accounts;
     void save_photo(QString &ref);
 };

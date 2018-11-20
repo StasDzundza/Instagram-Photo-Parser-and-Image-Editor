@@ -17,7 +17,7 @@ insta_parser::insta_parser(QWidget *parent) :
             this, SLOT(replyFinishedPhoto(QNetworkReply*)));
 
 }
-
+int insta_parser::count_images = 0;
 insta_parser::~insta_parser()
 {
     delete ui;
@@ -73,10 +73,10 @@ void insta_parser::replyFinished(QNetworkReply *reply)
     QString RefStart = "\"username\":\"" + account->get_nickname() +"\"},\"thumbnail_src\":\"";
     QString RefFinish = "\"";
 
-    QDir dir("../webPage");
+    QDir dir("../my_project");
     dir.mkdir(account->get_nickname());
-
-    QFile out("../webPage/" + account->get_nickname() + "/" + "AccountInfo.txt");
+    current_nickname = account->get_nickname();
+    QFile out("../my_project/" + account->get_nickname() + "/" + "AccountInfo.txt");
     out.open(QIODevice::WriteOnly | QIODevice::Text);
     QTextStream writeStream(&out);
 
@@ -99,6 +99,18 @@ void insta_parser::replyFinished(QNetworkReply *reply)
      qDebug()<<"finished";
 
      out.close();
+}
+
+void insta_parser::replyFinishedPhoto(QNetworkReply *reply)
+{
+    if (reply->error() == QNetworkReply::NoError)
+        {
+            QByteArray data = reply->readAll();
+            QImage image = QImage::fromData(data);
+            //ui->photo->setPixmap(QPixmap::fromImage(image));
+            //ui->photo->setMinimumHeight(image.height());
+            image.save("../webPage/" + current_nickname + "/" + "image" + QString::number(++count_images) + ".jpg");
+        }
 }
 
 void insta_parser::save_photo(QString &ref)
