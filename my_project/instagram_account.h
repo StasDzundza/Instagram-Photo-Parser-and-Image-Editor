@@ -9,8 +9,10 @@ class instagram_account
 {
 public:
     instagram_account();
+    void set_nickname(const QString&nickname);
+    QString &get_nickname();
 private:
-    QString nickname;
+    QString nickname = "";
     int count_likes = 0,count_subscribers = 0,count_you_subscribed = 0;
     vector<QImage*> images;
 };
