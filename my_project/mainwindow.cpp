@@ -18,3 +18,9 @@ void MainWindow::on_edit_photo_button_clicked()
     photo_edit_window = new photo_edit(this);
     photo_edit_window->show();
 }
+
+void MainWindow::on_instagram_info_button_clicked()
+{
+    insta_parser_window = new insta_parser(this);
+    insta_parser_window->show();
+}

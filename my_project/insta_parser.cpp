@@ -97,6 +97,7 @@ void insta_parser::replyFinished(QNetworkReply *reply)
         save_photo(ref);
      }
      qDebug()<<"finished";
+     ui->status->setText("Finished");
 
      out.close();
 }
@@ -109,7 +110,7 @@ void insta_parser::replyFinishedPhoto(QNetworkReply *reply)
             QImage image = QImage::fromData(data);
             //ui->photo->setPixmap(QPixmap::fromImage(image));
             //ui->photo->setMinimumHeight(image.height());
-            image.save("../webPage/" + current_nickname + "/" + "image" + QString::number(++count_images) + ".jpg");
+            image.save("../my_project/" + current_nickname + "/" + "image" + QString::number(++count_images) + ".jpg");
         }
 }
 

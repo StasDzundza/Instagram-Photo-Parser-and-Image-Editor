@@ -14,18 +14,31 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QPushButton" name="edit_photo_button">
+   <widget class="QWidget" name="">
     <property name="geometry">
      <rect>
-      <x>240</x>
+      <x>40</x>
       <y>40</y>
-      <width>93</width>
-      <height>28</height>
+      <width>301</width>
+      <height>30</height>
      </rect>
     </property>
-    <property name="text">
-     <string>Edit Photos</string>
-    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QPushButton" name="instagram_info_button">
+       <property name="text">
+        <string>Instagram Info</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="edit_photo_button">
+       <property name="text">
+        <string>Edit Photos</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
