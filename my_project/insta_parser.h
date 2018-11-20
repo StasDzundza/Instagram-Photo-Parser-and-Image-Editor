@@ -15,6 +15,9 @@ public:
     explicit insta_parser(QWidget *parent = nullptr);
     ~insta_parser();
 
+private slots:
+    void on_get_info_button_clicked();
+
 private:
     Ui::insta_parser *ui;
 };

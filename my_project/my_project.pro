@@ -28,14 +28,16 @@ SOURCES += \
     photo_edit.cpp \
     paintscene.cpp \
     photo_paint.cpp \
-    insta_parser.cpp
+    insta_parser.cpp \
+    instagram_account.cpp
 
 HEADERS += \
         mainwindow.h \
     photo_edit.h \
     paintscene.h \
     photo_paint.h \
-    insta_parser.h
+    insta_parser.h \
+    instagram_account.h
 
 FORMS += \
         mainwindow.ui \

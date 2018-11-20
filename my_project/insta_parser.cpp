@@ -12,3 +12,8 @@ insta_parser::~insta_parser()
 {
     delete ui;
 }
+
+void insta_parser::on_get_info_button_clicked()
+{
+
+}
