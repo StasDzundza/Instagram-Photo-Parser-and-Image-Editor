@@ -453,3 +453,8 @@ void photo_edit::on_paint_button_clicked()
     paint_window->show();
     emit paint_object(changed_img);
 }
+
+void photo_edit::on_open_by_url_button_clicked()
+{
+
+}

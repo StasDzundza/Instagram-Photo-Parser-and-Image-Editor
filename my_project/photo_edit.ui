@@ -31,26 +31,69 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>150</y>
-      <width>211</width>
-      <height>758</height>
+      <y>20</y>
+      <width>225</width>
+      <height>822</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="9" column="0">
-      <widget class="QSpinBox" name="x_point"/>
-     </item>
-     <item row="9" column="2">
-      <widget class="QSpinBox" name="y_point"/>
-     </item>
-     <item row="10" column="0" colspan="3">
-      <widget class="QPushButton" name="grayscale_button">
+     <item row="20" column="0" colspan="3">
+      <widget class="QPushButton" name="add_text_button">
        <property name="text">
-        <string>Grayscale</string>
+        <string>Add text</string>
        </property>
       </widget>
      </item>
-     <item row="9" column="1">
+     <item row="16" column="0" colspan="3">
+      <widget class="QPushButton" name="deep_sepia_button">
+       <property name="text">
+        <string>Deep Sepia</string>
+       </property>
+      </widget>
+     </item>
+     <item row="23" column="0" colspan="3">
+      <widget class="QPushButton" name="to_ascii_button">
+       <property name="text">
+        <string>To ASCII</string>
+       </property>
+      </widget>
+     </item>
+     <item row="12" column="0" colspan="3">
+      <widget class="QPushButton" name="mirror_button">
+       <property name="text">
+        <string>Mirror</string>
+       </property>
+      </widget>
+     </item>
+     <item row="17" column="0" colspan="3">
+      <widget class="QPushButton" name="swap_colors_button">
+       <property name="text">
+        <string>Swap colors</string>
+       </property>
+      </widget>
+     </item>
+     <item row="18" column="0" colspan="3">
+      <widget class="QPushButton" name="transparency_button">
+       <property name="text">
+        <string>Transparency</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0" colspan="3">
+      <widget class="QPushButton" name="paint_button">
+       <property name="text">
+        <string>Paint</string>
+       </property>
+      </widget>
+     </item>
+     <item row="26" column="0" colspan="3">
+      <widget class="QPushButton" name="noise_btn">
+       <property name="text">
+        <string>Noise</string>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="1">
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -70,12 +113,28 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0" colspan="3">
-      <widget class="QPushButton" name="reset_button">
+     <item row="10" column="2">
+      <widget class="QSpinBox" name="y_point"/>
+     </item>
+     <item row="10" column="0">
+      <widget class="QSpinBox" name="x_point"/>
+     </item>
+     <item row="11" column="0" colspan="3">
+      <widget class="QPushButton" name="grayscale_button">
        <property name="text">
-        <string>Reset</string>
+        <string>Grayscale</string>
        </property>
       </widget>
+     </item>
+     <item row="9" column="0" colspan="3">
+      <widget class="QPushButton" name="scale_button">
+       <property name="text">
+        <string>Scale</string>
+       </property>
+      </widget>
+     </item>
+     <item row="27" column="0" colspan="3">
+      <widget class="QLineEdit" name="noise_level"/>
      </item>
      <item row="5" column="0" colspan="3">
       <widget class="QPushButton" name="save_btn">
@@ -91,62 +150,52 @@
        </property>
       </widget>
      </item>
-     <item row="8" column="0" colspan="3">
-      <widget class="QPushButton" name="scale_button">
+     <item row="4" column="0" colspan="3">
+      <widget class="QPushButton" name="reset_button">
        <property name="text">
-        <string>Scale</string>
+        <string>Reset</string>
        </property>
       </widget>
      </item>
-     <item row="26" column="0" colspan="3">
-      <widget class="QLineEdit" name="noise_level"/>
-     </item>
-     <item row="13" column="0" colspan="3">
+     <item row="14" column="0" colspan="3">
       <widget class="QPushButton" name="negative_button">
        <property name="text">
         <string>Negative</string>
        </property>
       </widget>
      </item>
-     <item row="27" column="3">
-      <widget class="QLabel" name="level_3">
-       <property name="text">
-        <string>0</string>
-       </property>
-      </widget>
-     </item>
-     <item row="27" column="0">
+     <item row="28" column="0">
       <widget class="QLabel" name="label_3">
        <property name="text">
         <string>Gray effect</string>
        </property>
       </widget>
      </item>
-     <item row="20" column="0" colspan="3">
+     <item row="21" column="0" colspan="3">
       <widget class="QPushButton" name="draw_smile_button">
        <property name="text">
         <string>Draw Smile</string>
        </property>
       </widget>
      </item>
-     <item row="25" column="0" colspan="3">
-      <widget class="QPushButton" name="noise_btn">
+     <item row="28" column="3">
+      <widget class="QLabel" name="level_3">
        <property name="text">
-        <string>Noise</string>
+        <string>0</string>
        </property>
       </widget>
      </item>
-     <item row="18" column="0" colspan="3">
+     <item row="19" column="0" colspan="3">
       <widget class="QDoubleSpinBox" name="transparency_level"/>
      </item>
-     <item row="27" column="2">
-      <widget class="QSlider" name="gray_level_3">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+     <item row="15" column="0" colspan="3">
+      <widget class="QPushButton" name="sepia_button">
+       <property name="text">
+        <string>Sepia</string>
        </property>
       </widget>
      </item>
-     <item row="21" column="0" colspan="2">
+     <item row="22" column="0" colspan="2">
       <widget class="QComboBox" name="smile_list">
        <item>
         <property name="text">
@@ -177,56 +226,14 @@
        </item>
       </widget>
      </item>
-     <item row="14" column="0" colspan="3">
-      <widget class="QPushButton" name="sepia_button">
-       <property name="text">
-        <string>Sepia</string>
+     <item row="28" column="2">
+      <widget class="QSlider" name="gray_level_3">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
       </widget>
      </item>
-     <item row="11" column="0" colspan="3">
-      <widget class="QPushButton" name="mirror_button">
-       <property name="text">
-        <string>Mirror</string>
-       </property>
-      </widget>
-     </item>
-     <item row="16" column="0" colspan="3">
-      <widget class="QPushButton" name="swap_colors_button">
-       <property name="text">
-        <string>Swap colors</string>
-       </property>
-      </widget>
-     </item>
-     <item row="17" column="0" colspan="3">
-      <widget class="QPushButton" name="transparency_button">
-       <property name="text">
-        <string>Transparency</string>
-       </property>
-      </widget>
-     </item>
-     <item row="22" column="0" colspan="3">
-      <widget class="QPushButton" name="to_ascii_button">
-       <property name="text">
-        <string>To ASCII</string>
-       </property>
-      </widget>
-     </item>
-     <item row="15" column="0" colspan="3">
-      <widget class="QPushButton" name="deep_sepia_button">
-       <property name="text">
-        <string>Deep Sepia</string>
-       </property>
-      </widget>
-     </item>
-     <item row="19" column="0" colspan="3">
-      <widget class="QPushButton" name="add_text_button">
-       <property name="text">
-        <string>Add text</string>
-       </property>
-      </widget>
-     </item>
-     <item row="12" column="0" colspan="3">
+     <item row="13" column="0" colspan="3">
       <widget class="QGroupBox" name="groupBox">
        <property name="title">
         <string/>
@@ -259,12 +266,15 @@
        </widget>
       </widget>
      </item>
-     <item row="7" column="0" colspan="3">
-      <widget class="QPushButton" name="paint_button">
+     <item row="1" column="0" colspan="3">
+      <widget class="QPushButton" name="open_by_url_button">
        <property name="text">
-        <string>Paint</string>
+        <string>Open photo by url</string>
        </property>
       </widget>
+     </item>
+     <item row="3" column="0" colspan="3">
+      <widget class="QLineEdit" name="source_img"/>
      </item>
     </layout>
    </widget>

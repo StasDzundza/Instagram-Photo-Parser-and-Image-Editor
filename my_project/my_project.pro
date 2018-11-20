@@ -27,18 +27,21 @@ SOURCES += \
         mainwindow.cpp \
     photo_edit.cpp \
     paintscene.cpp \
-    photo_paint.cpp
+    photo_paint.cpp \
+    insta_parser.cpp
 
 HEADERS += \
         mainwindow.h \
     photo_edit.h \
     paintscene.h \
-    photo_paint.h
+    photo_paint.h \
+    insta_parser.h
 
 FORMS += \
         mainwindow.ui \
     photo_edit.ui \
-    photo_paint.ui
+    photo_paint.ui \
+    insta_parser.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

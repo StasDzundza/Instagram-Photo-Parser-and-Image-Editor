@@ -54,6 +54,8 @@ private slots:
 
     void on_paint_button_clicked();
 
+    void on_open_by_url_button_clicked();
+
 signals:
     void paint_object(QImage *image);
 private:
