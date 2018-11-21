@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>711</width>
+    <width>1096</width>
     <height>733</height>
    </rect>
   </property>
@@ -86,8 +86,8 @@
   <widget class="QPushButton" name="show_info_button">
    <property name="geometry">
     <rect>
-     <x>540</x>
-     <y>120</y>
+     <x>545</x>
+     <y>140</y>
      <width>93</width>
      <height>28</height>
     </rect>
@@ -99,8 +99,8 @@
   <widget class="QWidget" name="">
    <property name="geometry">
     <rect>
-     <x>541</x>
-     <y>631</y>
+     <x>530</x>
+     <y>340</y>
      <width>121</width>
      <height>91</height>
     </rect>
@@ -140,6 +140,67 @@
         <string>Comments</string>
        </property>
       </item>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>670</x>
+     <y>120</y>
+     <width>351</width>
+     <height>431</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <widget class="QLabel" name="lbl_name">
+      <property name="text">
+       <string>Nickname :</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="lbl_biography">
+      <property name="text">
+       <string>Biography :</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="lbl_followers">
+      <property name="text">
+       <string>Followers :</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="lbl_following">
+      <property name="text">
+       <string>Following :</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="lbl_posts">
+      <property name="text">
+       <string>Count Posts : </string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="lbl_likes">
+      <property name="text">
+       <string>Count Likes :</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="lbl_comments">
+      <property name="text">
+       <string>Count Comments :</string>
+      </property>
      </widget>
     </item>
    </layout>

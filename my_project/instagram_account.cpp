@@ -15,6 +15,16 @@ QString &instagram_account::get_nickname()
     return this->nickname;
 }
 
+void instagram_account::set_biography(const QString &biography)
+{
+    this->biography = biography;
+}
+
+QString &instagram_account::get_biography()
+{
+    return biography;
+}
+
 void instagram_account::set_count_likes(const int count_likes)
 {
     this->count_likes = count_likes;

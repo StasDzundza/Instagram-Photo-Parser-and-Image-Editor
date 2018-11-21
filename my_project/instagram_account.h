@@ -1,8 +1,10 @@
 #ifndef INSTAGRAM_ACCOUNT_H
 #define INSTAGRAM_ACCOUNT_H
+
 #include<QString>
 #include<QImage>
 #include<vector>
+
 using std::vector;
 
 class instagram_account
@@ -11,6 +13,8 @@ public:
     instagram_account();
     void set_nickname(const QString&nickname);
     QString &get_nickname();
+    void set_biography(const QString&biography);
+    QString &get_biography();
     void set_count_likes(const int count_likes);
     int get_count_likes();
     void set_count_comments(const int count_comments);
@@ -23,8 +27,9 @@ public:
     int get_count_posts();
 private:
     QString nickname = "";
+    QString biography = "";
     int count_likes = 0,count_comments = 0,count_followers = 0,count_following = 0,count_posts = 0;
-    vector<QImage*> images;
+    //vector<QImage*> images;
 };
 
 #endif // INSTAGRAM_ACCOUNT_H

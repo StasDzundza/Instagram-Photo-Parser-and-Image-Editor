@@ -26,6 +26,7 @@ public:
     void get_count_likes(const QByteArray&byte,instagram_account*account);
     void get_count_comments(const QByteArray&byte,instagram_account*account);
     void get_page_info(const QByteArray&byte,instagram_account*account);
+    void get_biography(const QByteArray&byte,instagram_account*account);
 
 private slots:
     void on_get_info_button_clicked();

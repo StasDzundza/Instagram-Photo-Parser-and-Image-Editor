@@ -41,7 +41,6 @@ void insta_parser::get_user_name(const QByteArray &byte, instagram_account *acco
     f = index;
     index = index + username_finish.length();
     account->set_nickname(byte.mid(s, f - s));
-    qDebug()<<account->get_nickname();
 }
 
 void insta_parser::get_count_likes(const QByteArray &byte, instagram_account *account)
@@ -98,26 +97,56 @@ void insta_parser::get_page_info(const QByteArray &byte, instagram_account *acco
 
     int idx = 0, start = -1, finish = -1;
     QString followers_start = "<meta content=\"";
-    QString followers_finish = " ";
+    QString followers_finish = " млн";
 
     QString following_start = ", ";
     QString following_finish = " ";
 
-    QString posts_start = "<meta content=\"";
+    QString posts_start = ", ";
     QString posts_finish = " ";
 
     //followers
+    int temp_idx = idx;
+    int temp_idx2 = idx;
     idx = byte.indexOf(followers_start, idx);
-    Q_ASSERT(idx > 0);
     start = idx = idx + followers_start.length();
 
-    idx = byte.indexOf(followers_finish, idx);
-    Q_ASSERT(idx > 0);
-    finish = idx;
-    idx = idx + followers_finish.length();
-    QString count_followers = byte.mid(start, finish - start);
-    followers = count_followers.toInt();
-    account->set_count_followers(followers);
+    temp_idx = byte.indexOf(followers_finish, idx);
+    if(temp_idx == -1)
+    {
+        followers_finish = " тис";
+        temp_idx2 = byte.indexOf(followers_finish, idx);
+        if(temp_idx2 == -1)
+        {
+            finish = idx;
+            idx = idx + followers_finish.length();
+            QString count_followers = byte.mid(start, finish - start);
+            followers = count_followers.toInt();
+            account->set_count_followers(followers);
+        }
+        else
+        {
+            finish = temp_idx2;
+            idx = temp_idx2 + followers_finish.length();
+            QString count_followers = byte.mid(start, finish - start);
+            double fol = count_followers.toDouble();
+            fol*=1000;
+            followers = fol;
+            account->set_count_followers(followers);
+        }
+
+    }
+    else
+    {
+        finish = temp_idx;
+        idx = temp_idx + followers_finish.length();
+        QString count_followers = byte.mid(start, finish - start);
+        double fol = count_followers.toDouble();
+        fol*=1000000;
+        followers = fol;
+        account->set_count_followers(followers);
+    }
+
     // writeStream << ref + '\n';
 
     //following
@@ -129,8 +158,16 @@ void insta_parser::get_page_info(const QByteArray &byte, instagram_account *acco
     Q_ASSERT(idx > 0);
     finish = idx;
     idx = idx + following_finish.length();
+    bool is_bad_symbol = false;
     QString count_following = byte.mid(start, finish - start);
-    following = count_following.toInt();
+    QString correct_count_following;
+    for(int i = 0; i < count_following.size();i++)
+    {
+        if(count_following[i] != ',')
+            correct_count_following+=count_following[i];
+
+    }
+    following = correct_count_following.toInt();
     account->set_count_following(following);
 
     //posts
@@ -143,9 +180,33 @@ void insta_parser::get_page_info(const QByteArray &byte, instagram_account *acco
     finish = idx;
     idx = idx + posts_finish.length();
     QString count_posts = byte.mid(start, finish - start);
-    posts = count_posts.toInt();
+    QString correct_count_posts;
+    for(int i = 0; i < count_posts.size();i++)
+    {
+        if(count_posts[i] != ',')
+            correct_count_posts+=count_posts[i];
+
+    }
+    posts = correct_count_posts.toInt();
     account->set_count_posts(posts);
 
+}
+
+void insta_parser::get_biography(const QByteArray &byte, instagram_account *account)
+{
+    int index = 0, start = -1, finish = -1;
+    QString biography_start = "\"user\":{\"biography\":\"", biography_finish = "\"";
+
+
+    index = byte.indexOf(biography_start, index);
+    Q_ASSERT(index > 0);
+    start = index = index + biography_start.length();
+
+    index = byte.indexOf(biography_finish, index);
+    Q_ASSERT(index > 0);
+    finish = index;
+    index = index + biography_finish.length();
+    account->set_biography(byte.mid(start, finish - start));
 }
 
 
@@ -253,5 +314,20 @@ void insta_parser::save_photo(QString &ref)
 
 void insta_parser::on_show_info_button_clicked()
 {
+    if(!accounts.empty())
+    {
+        QList<QListWidgetItem *> items = ui->accounts_list->selectedItems();
+        if(!items.isEmpty())
+        {
+            int current = ui->accounts_list->currentRow();
+            ui->lbl_name->setText("Nickname : " + accounts[current]->get_nickname());
+            ui->lbl_biography->setText("Biography : " + accounts[current]->get_biography());
+            ui->lbl_followers->setText("Followers : " + QString::number(accounts[current]->get_count_followers()));
+            ui->lbl_following->setText("Following : " + QString::number(accounts[current]->get_count_following()));
+            ui->lbl_posts->setText("Count Posts : " + QString::number(accounts[current]->get_count_posts()));
+            ui->lbl_likes->setText("Count Likes : " + QString::number(accounts[current]->get_count_likes()));
+            ui->lbl_comments->setText("Count Comments : " + QString::number(accounts[current]->get_count_comments()));
+        }
+    }
 
 }
