@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1096</width>
-    <height>733</height>
+    <height>696</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -79,7 +79,7 @@
      <x>20</x>
      <y>120</y>
      <width>491</width>
-     <height>591</height>
+     <height>541</height>
     </rect>
    </property>
   </widget>
@@ -94,6 +94,16 @@
    </property>
    <property name="text">
     <string>Show Info</string>
+   </property>
+  </widget>
+  <widget class="QTextBrowser" name="biography_text">
+   <property name="geometry">
+    <rect>
+     <x>671</x>
+     <y>550</y>
+     <width>391</width>
+     <height>111</height>
+    </rect>
    </property>
   </widget>
   <widget class="QWidget" name="">
@@ -147,10 +157,10 @@
   <widget class="QWidget" name="">
    <property name="geometry">
     <rect>
-     <x>670</x>
-     <y>120</y>
-     <width>351</width>
-     <height>431</height>
+     <x>671</x>
+     <y>91</y>
+     <width>391</width>
+     <height>461</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -158,13 +168,6 @@
      <widget class="QLabel" name="lbl_name">
       <property name="text">
        <string>Nickname :</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLabel" name="lbl_biography">
-      <property name="text">
-       <string>Biography :</string>
       </property>
      </widget>
     </item>

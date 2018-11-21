@@ -195,10 +195,11 @@ void insta_parser::get_page_info(const QByteArray &byte, instagram_account *acco
 void insta_parser::get_biography(const QByteArray &byte, instagram_account *account)
 {
     int index = 0, start = -1, finish = -1;
-    QString biography_start = "\"user\":{\"biography\":\"", biography_finish = "\"";
+    QString biography_start = "{\"biography\":\"", biography_finish = "\"";
 
 
     index = byte.indexOf(biography_start, index);
+    qDebug()<<index;
     Q_ASSERT(index > 0);
     start = index = index + biography_start.length();
 
@@ -206,7 +207,9 @@ void insta_parser::get_biography(const QByteArray &byte, instagram_account *acco
     Q_ASSERT(index > 0);
     finish = index;
     index = index + biography_finish.length();
-    account->set_biography(byte.mid(start, finish - start));
+    QString biography = byte.mid(start, finish - start);
+    qDebug()<<biography;
+    account->set_biography(biography);
 }
 
 
@@ -282,6 +285,7 @@ void insta_parser::replyFinished(QNetworkReply *reply)
     get_count_likes(byte,account);
     get_count_comments(byte,account);
     get_page_info(byte,account);
+    get_biography(byte,account);
 
     QListWidgetItem *item = new QListWidgetItem;
     item->setText(account->get_nickname());
@@ -321,7 +325,7 @@ void insta_parser::on_show_info_button_clicked()
         {
             int current = ui->accounts_list->currentRow();
             ui->lbl_name->setText("Nickname : " + accounts[current]->get_nickname());
-            ui->lbl_biography->setText("Biography : " + accounts[current]->get_biography());
+            ui->biography_text->setText("Biography : " + accounts[current]->get_biography());
             ui->lbl_followers->setText("Followers : " + QString::number(accounts[current]->get_count_followers()));
             ui->lbl_following->setText("Following : " + QString::number(accounts[current]->get_count_following()));
             ui->lbl_posts->setText("Count Posts : " + QString::number(accounts[current]->get_count_posts()));

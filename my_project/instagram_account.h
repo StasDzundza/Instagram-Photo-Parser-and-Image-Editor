@@ -11,9 +11,9 @@ class instagram_account
 {
 public:
     instagram_account();
-    void set_nickname(const QString&nickname);
+    void set_nickname(const QString &nickname);
     QString &get_nickname();
-    void set_biography(const QString&biography);
+    void set_biography(const QString &biography);
     QString &get_biography();
     void set_count_likes(const int count_likes);
     int get_count_likes();
