@@ -1,5 +1,7 @@
 #include "insta_parser.h"
 #include "ui_insta_parser.h"
+#include <QListWidget>
+#include <QListWidgetItem>
 #include <QFile>
 #include <QDir>
 
@@ -212,10 +214,17 @@ void insta_parser::replyFinished(QNetworkReply *reply)
 
     //parsing
     instagram_account*account = new instagram_account;
+    accounts.push_back(account);
 
     get_user_name(byte,account);
     download_photos(byte,account);
+    get_count_likes(byte,account);
+    get_count_comments(byte,account);
+    get_page_info(byte,account);
 
+    QListWidgetItem *item = new QListWidgetItem;
+    item->setText(account->get_nickname());
+    ui->accounts_list->addItem(item);
 
     qDebug()<<"finished";
     ui->status->setText("Finished");
@@ -240,4 +249,9 @@ void insta_parser::save_photo(QString &ref)
     request_photo.setSslConfiguration(sslConfiguration);
     request_photo.setUrl(QUrl(ref));
     manager_photo->get(request_photo);
+}
+
+void insta_parser::on_show_info_button_clicked()
+{
+
 }
