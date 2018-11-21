@@ -6,7 +6,7 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QNetworkAccessManager>
-#include <QBitArray>
+#include <QByteArray>
 #include <QString>
 #include "instagram_account.h"
 
@@ -21,6 +21,13 @@ class insta_parser : public QDialog
 public:
     explicit insta_parser(QWidget *parent = nullptr);
     ~insta_parser();
+    void download_photos(const QByteArray&byte, instagram_account *account);
+    void get_user_name(const QByteArray&byte,instagram_account*account);
+    void get_count_likes(const QByteArray&byte,instagram_account*account);
+    void get_count_comments(const QByteArray&byte,instagram_account*account);
+    void get_count_subscribers(const QByteArray&byte,instagram_account*account);
+    void get_count_subscribed_on(const QByteArray&byte,instagram_account*account);
+
 private slots:
     void on_get_info_button_clicked();
     void replyFinished(QNetworkReply*reply);

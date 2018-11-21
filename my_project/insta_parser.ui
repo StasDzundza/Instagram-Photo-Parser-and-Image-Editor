@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1272</width>
+    <width>711</width>
     <height>733</height>
    </rect>
   </property>
@@ -33,7 +33,7 @@
     </property>
    </item>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>21</x>
@@ -67,9 +67,41 @@
     <item>
      <widget class="QLabel" name="status">
       <property name="text">
-       <string>+</string>
+       <string/>
       </property>
      </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QListWidget" name="listWidget">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>120</y>
+     <width>491</width>
+     <height>591</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>541</x>
+     <y>631</y>
+     <width>121</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QPushButton" name="sort_button">
+      <property name="text">
+       <string>Sort by...</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QComboBox" name="comboBox_2"/>
     </item>
    </layout>
   </widget>
