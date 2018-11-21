@@ -15,9 +15,15 @@ public:
     int get_count_likes();
     void set_count_comments(const int count_comments);
     int get_count_comments();
+    void set_count_followers(const int count_followers);
+    int get_count_followers();
+    void set_count_following(const int count_following);
+    int get_count_following();
+    void set_count_posts(const int count_posts);
+    int get_count_posts();
 private:
     QString nickname = "";
-    int count_likes = 0,count_comments = 0,count_subscribers = 0,count_you_subscribed = 0;
+    int count_likes = 0,count_comments = 0,count_followers = 0,count_following = 0,count_posts = 0;
     vector<QImage*> images;
 };
 

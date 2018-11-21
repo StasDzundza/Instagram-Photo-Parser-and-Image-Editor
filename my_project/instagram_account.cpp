@@ -34,3 +34,33 @@ int instagram_account::get_count_comments()
 {
     return count_comments;
 }
+
+void instagram_account::set_count_followers(const int count_followers)
+{
+    this->count_followers = count_followers;
+}
+
+int instagram_account::get_count_followers()
+{
+    return count_followers;
+}
+
+void instagram_account::set_count_following(const int count_following)
+{
+    this->count_following = count_following;
+}
+
+int instagram_account::get_count_following()
+{
+    return count_following;
+}
+
+void instagram_account::set_count_posts(const int count_posts)
+{
+    this->count_posts = count_posts;
+}
+
+int instagram_account::get_count_posts()
+{
+    return count_posts;
+}

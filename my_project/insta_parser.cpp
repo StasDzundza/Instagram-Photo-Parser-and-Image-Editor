@@ -88,15 +88,64 @@ void insta_parser::get_count_comments(const QByteArray &byte, instagram_account 
     account->set_count_comments(count_comments);
 }
 
-void insta_parser::get_count_subscribers(const QByteArray &byte, instagram_account *account)
+void insta_parser::get_page_info(const QByteArray &byte, instagram_account *account)
 {
+    int followers = 0;
+    int following = 0;
+    int posts = 0;
+
+    int idx = 0, start = -1, finish = -1;
+    QString followers_start = "<meta content=\"";
+    QString followers_finish = " ";
+
+    QString following_start = ", ";
+    QString following_finish = " ";
+
+    QString posts_start = "<meta content=\"";
+    QString posts_finish = " ";
+
+    //followers
+    idx = byte.indexOf(followers_start, idx);
+    Q_ASSERT(idx > 0);
+    start = idx = idx + followers_start.length();
+
+    idx = byte.indexOf(followers_finish, idx);
+    Q_ASSERT(idx > 0);
+    finish = idx;
+    idx = idx + followers_finish.length();
+    QString count_followers = byte.mid(start, finish - start);
+    followers = count_followers.toInt();
+    account->set_count_followers(followers);
+    // writeStream << ref + '\n';
+
+    //following
+    idx = byte.indexOf(following_start, idx);
+    Q_ASSERT(idx > 0);
+    start = idx = idx + following_start.length();
+
+    idx = byte.indexOf(following_finish, idx);
+    Q_ASSERT(idx > 0);
+    finish = idx;
+    idx = idx + following_finish.length();
+    QString count_following = byte.mid(start, finish - start);
+    following = count_following.toInt();
+    account->set_count_following(following);
+
+    //posts
+    idx = byte.indexOf(posts_start, idx);
+    Q_ASSERT(idx > 0);
+    start = idx = idx + posts_start.length();
+
+    idx = byte.indexOf(posts_finish, idx);
+    Q_ASSERT(idx > 0);
+    finish = idx;
+    idx = idx + posts_finish.length();
+    QString count_posts = byte.mid(start, finish - start);
+    posts = count_posts.toInt();
+    account->set_count_posts(posts);
 
 }
 
-void insta_parser::get_count_subscribed_on(const QByteArray &byte, instagram_account *account)
-{
-
-}
 
 void insta_parser::download_photos(const QByteArray &byte, instagram_account *account)
 {

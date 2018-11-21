@@ -73,7 +73,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QListWidget" name="listWidget">
+  <widget class="QListWidget" name="accounts_list">
    <property name="geometry">
     <rect>
      <x>20</x>
@@ -101,7 +101,33 @@
      </widget>
     </item>
     <item>
-     <widget class="QComboBox" name="comboBox_2"/>
+     <widget class="QComboBox" name="sort_type">
+      <item>
+       <property name="text">
+        <string>Followers</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Following</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Posts</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Likes</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Comments</string>
+       </property>
+      </item>
+     </widget>
     </item>
    </layout>
   </widget>
