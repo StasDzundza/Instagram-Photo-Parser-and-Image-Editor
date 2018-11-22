@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 #include <QGraphicsScene>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
 #include "paintscene.h"
 #include "photo_paint.h"
 namespace Ui {
@@ -58,6 +61,8 @@ private slots:
 
 signals:
     void paint_object(QImage *image);
+private slots:
+    void replyFinishedPhoto(QNetworkReply*);
 private:
     Ui::photo_edit *ui;
     int count_of_changed_images = 1;
@@ -72,6 +77,12 @@ private:
 
     paintScene *scene;
     photo_paint *paint_window = nullptr;
+
+
+    QNetworkReply *reply_photo;
+    QNetworkRequest request_photo;
+    QNetworkAccessManager *manager_photo;
+
 
 
 };

@@ -10,6 +10,7 @@
 #include<vector>
 #include<QTextStream>
 #include<QtSvg/QSvgGenerator>
+#include<QByteArray>
 photo_edit::photo_edit(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::photo_edit)
@@ -26,6 +27,9 @@ photo_edit::photo_edit(QWidget *parent) :
 
     ui->horizontal_mirror->setChecked(true);
 
+    manager_photo = new QNetworkAccessManager(this);
+    manager_photo->setStrictTransportSecurityEnabled(true);
+    connect(manager_photo, SIGNAL(finished(QNetworkReply*)),this, SLOT(replyFinishedPhoto(QNetworkReply*)));
    /* scene = new paintScene();       // Инициализируем графическую сцену
     ui->graphicsView->setScene(scene); */ // Устанавливаем графическую сцену
 }
@@ -456,5 +460,25 @@ void photo_edit::on_paint_button_clicked()
 
 void photo_edit::on_open_by_url_button_clicked()
 {
+    QSslConfiguration sslConfiguration(QSslConfiguration::defaultConfiguration());
+    request_photo.setSslConfiguration(sslConfiguration);
+    request_photo.setUrl(QUrl(ui->source_img->text()));
+    manager_photo->get(request_photo);
+}
 
+void photo_edit::replyFinishedPhoto(QNetworkReply *reply)
+{
+    if (reply->error() == QNetworkReply::NoError)
+        {
+            QByteArray data = reply->readAll();
+            QImage *image =new QImage(QImage::fromData(data)) ;
+            changed_img = original_img = image;
+            QPixmap pix(QPixmap::fromImage(*changed_img));
+            int w = pix.width();
+            int h = pix.height();
+            image_size = pix.size();
+            ui->image->resize(w,h);
+            ui->image->setPixmap(pix.scaled(w,h,Qt::KeepAspectRatio));
+            changed_img->save("../my_project/images/image" + QString::number(count_of_changed_images++) + ".jpg");
+        }
 }

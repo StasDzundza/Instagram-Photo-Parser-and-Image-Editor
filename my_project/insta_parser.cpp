@@ -20,8 +20,7 @@ insta_parser::insta_parser(QWidget *parent) :
 
     manager_photo = new QNetworkAccessManager(this);
     manager_photo->setStrictTransportSecurityEnabled(true);
-    connect(manager_photo, SIGNAL(finished(QNetworkReply*)),
-            this, SLOT(replyFinishedPhoto(QNetworkReply*)));
+    connect(manager_photo, SIGNAL(finished(QNetworkReply*)),this, SLOT(replyFinishedPhoto(QNetworkReply*)));
 
 }
 int insta_parser::count_images = 0;
@@ -122,6 +121,9 @@ void insta_parser::get_page_info(const QByteArray &byte, instagram_account *acco
         temp_idx2 = byte.indexOf(followers_finish, idx);
         if(temp_idx2 == -1)
         {
+            followers_finish = " ";
+            idx = byte.indexOf(followers_finish, idx);
+            Q_ASSERT(idx > 0);
             finish = idx;
             idx = idx + followers_finish.length();
             QString count_followers = byte.mid(start, finish - start);
@@ -263,10 +265,11 @@ QString insta_parser::get_next_page_url(const QByteArray &byte, instagram_accoun
 
 void insta_parser::send_request_to_next_page(QString next_page_URL)
 {
+    qDebug()<<next_page_URL;
     QSslConfiguration sslConfiguration(QSslConfiguration::defaultConfiguration());
     request_next_page.setSslConfiguration(sslConfiguration);
     request_next_page.setUrl(QUrl(next_page_URL));
-    network_manager_next_page->get(request);
+    network_manager_next_page->get(request_next_page);
 }
 
 
@@ -300,6 +303,34 @@ void insta_parser::download_photos(const QByteArray &byte, instagram_account *ac
         save_photo(ref);
      }
     out.close();
+}
+
+void insta_parser::download_photos_on_the_next_page(const QByteArray &byte, instagram_account *account)
+{
+    int idx = 0, start = -1, finish = -1;
+    QString RefStart = "\"thumbnail_src\":\"";
+    QString RefFinish = "\"";
+    //QFile out("../my_project/" + account->get_nickname() + "/" + "AccountInfo.txt");
+    //out.open(QIODevice::WriteOnly | QIODevice::Text);
+    //QTextStream writeStream(&out);
+
+    for (;;)
+    {
+        idx = byte.indexOf(RefStart, idx);
+        if(idx == -1)break;
+        start = idx = idx + RefStart.length();
+
+        idx = byte.indexOf(RefFinish, idx);
+        Q_ASSERT(idx > 0);
+        finish = idx;
+        idx = idx + RefFinish.length();
+        QString ref = byte.mid(start, finish - start);
+
+        //writeStream << ref + '\n';
+
+        save_photo(ref);
+     }
+    //out.close();
 }
 
 void insta_parser::on_get_info_button_clicked()
@@ -344,8 +375,11 @@ void insta_parser::replyFinished(QNetworkReply *reply)
     get_page_info(byte,account);
     get_biography(byte,account);
     get_id(byte,account);
-
-    send_request_to_next_page(get_next_page_url(byte,account));
+    QString next_page_url  = get_next_page_url(byte,account);
+    if(next_page_url !="")
+    {
+        send_request_to_next_page(next_page_url);
+    }
 
     QListWidgetItem *item = new QListWidgetItem;
     item->setText(account->get_nickname());
@@ -399,4 +433,14 @@ void insta_parser::on_show_info_button_clicked()
 void insta_parser::replyFinishedNextPage(QNetworkReply *reply_next_page)
 {
     QByteArray byte = reply_next_page->readAll();
+    qDebug()<<byte;
+    //get_count_comments(byte,current_account);
+    //get_count_likes(byte,current_account);
+    download_photos_on_the_next_page(byte,current_account);
+    QString next_page_url  = get_next_page_url(byte,current_account);
+    if(next_page_url !="")
+    {
+        send_request_to_next_page(next_page_url);
+    }
+    reply_next_page->deleteLater();
 }

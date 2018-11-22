@@ -22,6 +22,7 @@ public:
     explicit insta_parser(QWidget *parent = nullptr);
     ~insta_parser();
     void download_photos(const QByteArray&byte, instagram_account *account);
+    void download_photos_on_the_next_page(const QByteArray &byte, instagram_account *account);
     void get_user_name(const QByteArray&byte,instagram_account*account);
     void get_count_likes(const QByteArray&byte,instagram_account*account);
     void get_count_comments(const QByteArray&byte,instagram_account*account);
