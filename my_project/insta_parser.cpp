@@ -11,8 +11,12 @@ insta_parser::insta_parser(QWidget *parent) :
 {
     ui->setupUi(this);
     network_manager = new QNetworkAccessManager(this);
+    network_manager_next_page = new QNetworkAccessManager(this);
     network_manager->setStrictTransportSecurityEnabled(true);
+    network_manager->setStrictTransportSecurityEnabled(true);
+
     connect(network_manager, SIGNAL(finished(QNetworkReply*)),this, SLOT(replyFinished(QNetworkReply*)));
+    connect(network_manager_next_page, SIGNAL(finished(QNetworkReply*)),this, SLOT(replyFinishedNextPage(QNetworkReply*)));
 
     manager_photo = new QNetworkAccessManager(this);
     manager_photo->setStrictTransportSecurityEnabled(true);
@@ -208,8 +212,61 @@ void insta_parser::get_biography(const QByteArray &byte, instagram_account *acco
     finish = index;
     index = index + biography_finish.length();
     QString biography = byte.mid(start, finish - start);
-    qDebug()<<biography;
     account->set_biography(biography);
+}
+
+void insta_parser::get_id(const QByteArray &byte, instagram_account *account)
+{
+    int index = 0, start = -1, finish = -1;
+    QString id_start = "\"owner\":{\"id\":\"", id_finish = "\"";
+
+
+    index = byte.indexOf(id_start, index);
+    qDebug()<<index;
+    Q_ASSERT(index > 0);
+    start = index = index + id_start.length();
+
+    index = byte.indexOf(id_finish, index);
+    Q_ASSERT(index > 0);
+    finish = index;
+    index = index + id_finish.length();
+    QString id = byte.mid(start, finish - start);
+    account->set_id(id);
+}
+
+QString insta_parser::get_next_page_url(const QByteArray &byte, instagram_account *account)
+{
+    int index = 0, start = -1, finish = -1;
+    QString end_cursor_start = "\"has_next_page\":true,\"end_cursor\":\"", end_cursor_finish = "==\"";
+
+
+    index = byte.indexOf(end_cursor_start, index);
+    if(index!=-1)
+    {
+        Q_ASSERT(index > 0);
+        start = index = index + end_cursor_start.length();
+
+        index = byte.indexOf(end_cursor_finish, index);
+        Q_ASSERT(index > 0);
+        finish = index;
+        index = index + end_cursor_finish.length();
+        QString end_cursor = byte.mid(start, finish - start);
+        QString url_of_next_page = next_page_url_start + account->get_id() + after_id + end_cursor + after_end_cursor_url;
+        return url_of_next_page;
+    }
+    else
+    {
+        return "";
+    }
+
+}
+
+void insta_parser::send_request_to_next_page(QString next_page_URL)
+{
+    QSslConfiguration sslConfiguration(QSslConfiguration::defaultConfiguration());
+    request_next_page.setSslConfiguration(sslConfiguration);
+    request_next_page.setUrl(QUrl(next_page_URL));
+    network_manager_next_page->get(request);
 }
 
 
@@ -259,7 +316,6 @@ void insta_parser::on_get_info_button_clicked()
     QSslConfiguration sslConfiguration(QSslConfiguration::defaultConfiguration());
     request.setSslConfiguration(sslConfiguration);
     request.setUrl(QUrl(URL));
-    //request.setRawHeader("User-Agent", "MyOwnBrowser 1.0");
     network_manager->get(request);
 }
 
@@ -278,6 +334,7 @@ void insta_parser::replyFinished(QNetworkReply *reply)
 
     //parsing
     instagram_account*account = new instagram_account;
+    current_account = account;
     accounts.push_back(account);
 
     get_user_name(byte,account);
@@ -286,6 +343,9 @@ void insta_parser::replyFinished(QNetworkReply *reply)
     get_count_comments(byte,account);
     get_page_info(byte,account);
     get_biography(byte,account);
+    get_id(byte,account);
+
+    send_request_to_next_page(get_next_page_url(byte,account));
 
     QListWidgetItem *item = new QListWidgetItem;
     item->setText(account->get_nickname());
@@ -334,4 +394,9 @@ void insta_parser::on_show_info_button_clicked()
         }
     }
 
+}
+
+void insta_parser::replyFinishedNextPage(QNetworkReply *reply_next_page)
+{
+    QByteArray byte = reply_next_page->readAll();
 }

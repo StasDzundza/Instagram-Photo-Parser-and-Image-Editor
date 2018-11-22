@@ -24,3 +24,4 @@ void MainWindow::on_instagram_info_button_clicked()
     insta_parser_window = new insta_parser(this);
     insta_parser_window->show();
 }
+

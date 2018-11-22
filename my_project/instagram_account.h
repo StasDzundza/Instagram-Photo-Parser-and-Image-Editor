@@ -25,10 +25,13 @@ public:
     int get_count_following();
     void set_count_posts(const int count_posts);
     int get_count_posts();
+    void set_id(QString&id);
+    QString &get_id();
 private:
     QString nickname = "";
     QString biography = "";
     int count_likes = 0,count_comments = 0,count_followers = 0,count_following = 0,count_posts = 0;
+    QString id = "";
     //vector<QImage*> images;
 };
 
