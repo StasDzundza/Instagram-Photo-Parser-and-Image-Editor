@@ -9,14 +9,14 @@
 #include<random>
 #include<vector>
 #include<QTextStream>
-#include<QtSvg/QSvgGenerator>
 #include<QByteArray>
+
 photo_edit::photo_edit(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::photo_edit)
 {
     ui->setupUi(this);
-
+    this->showMaximized();
     ui->gray_level_3->setMaximum(7);
     ui->transparency_level->setMaximum(2.5);
     ui->transparency_level->setMinimum(1.0);
@@ -351,7 +351,6 @@ void photo_edit::on_open_photo_button_clicked()
      {
 
         original_img = new QImage(fileName);
-
         QPixmap pix(QPixmap::fromImage(*original_img));
         int w = pix.width();
         int h = pix.height();
@@ -360,6 +359,11 @@ void photo_edit::on_open_photo_button_clicked()
         ui->image->setPixmap(pix.scaled(w,h,Qt::IgnoreAspectRatio));
 
         changed_img = new QImage(fileName);
+
+        ui->x_point->setMaximum(image_size.width());
+        ui->y_point->setMaximum(image_size.height());
+        ui->x_point->setValue(image_size.width());
+        ui->y_point->setValue(image_size.height());
 
         //якщо б ми мали графік сцену
 
@@ -452,6 +456,9 @@ void photo_edit::on_scale_button_clicked()
     if(changed_img)
     {
         changed_img->scaled(ui->x_point->value(),ui->y_point->value()).save("scaled_photo_number" + QString::number(count_of_changed_images)+".jpg");
+        changed_img->load("scaled_photo_number" + QString::number(count_of_changed_images)+".jpg");
+        original_img->load("scaled_photo_number" + QString::number(count_of_changed_images)+".jpg");
+        count_of_changed_images++;
         QPixmap pix(QPixmap::fromImage(*changed_img));
         int w = pix.width();
         int h = pix.height();

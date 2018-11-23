@@ -29,7 +29,8 @@ SOURCES += \
     paintscene.cpp \
     photo_paint.cpp \
     insta_parser.cpp \
-    instagram_account.cpp
+    instagram_account.cpp \
+    photo.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -37,7 +38,8 @@ HEADERS += \
     paintscene.h \
     photo_paint.h \
     insta_parser.h \
-    instagram_account.h
+    instagram_account.h \
+    photo.h
 
 FORMS += \
         mainwindow.ui \

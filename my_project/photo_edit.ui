@@ -10,8 +10,17 @@
     <height>870</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Photo Editor</string>
+  </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QLabel" name="image">
@@ -23,8 +32,16 @@
       <height>631</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>16</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+      <underline>true</underline>
+     </font>
+    </property>
     <property name="text">
-     <string>TextLabel</string>
+     <string>Open image on tour PC, or download it!</string>
     </property>
    </widget>
    <widget class="QWidget" name="layoutWidget">
@@ -32,8 +49,8 @@
      <rect>
       <x>10</x>
       <y>20</y>
-      <width>225</width>
-      <height>822</height>
+      <width>241</width>
+      <height>850</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
@@ -238,32 +255,22 @@
        <property name="title">
         <string/>
        </property>
-       <widget class="QCheckBox" name="vertical_mirror">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>0</y>
-          <width>41</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>V</string>
-        </property>
-       </widget>
-       <widget class="QCheckBox" name="horizontal_mirror">
-        <property name="geometry">
-         <rect>
-          <x>90</x>
-          <y>0</y>
-          <width>95</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>H</string>
-        </property>
-       </widget>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="0" column="0">
+         <widget class="QCheckBox" name="vertical_mirror">
+          <property name="text">
+           <string>V</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QCheckBox" name="horizontal_mirror">
+          <property name="text">
+           <string>H</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </item>
      <item row="1" column="0" colspan="3">
