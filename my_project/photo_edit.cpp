@@ -17,6 +17,13 @@ photo_edit::photo_edit(QWidget *parent) :
 {
     ui->setupUi(this);
     this->showMaximized();
+
+    get_count_of_changed_images();
+    if(count_of_changed_images == 0)
+    {
+        count_of_changed_images++;
+    }
+
     ui->gray_level_3->setMaximum(7);
     ui->transparency_level->setMaximum(2.5);
     ui->transparency_level->setMinimum(1.0);
@@ -27,14 +34,22 @@ photo_edit::photo_edit(QWidget *parent) :
     manager_photo = new QNetworkAccessManager(this);
     manager_photo->setStrictTransportSecurityEnabled(true);
     connect(manager_photo, SIGNAL(finished(QNetworkReply*)),this, SLOT(replyFinishedPhoto(QNetworkReply*)));
-   /* scene = new paintScene();       // Инициализируем графическую сцену
-    ui->graphicsView->setScene(scene); */ // Устанавливаем графическую сцену
 }
 
 
 photo_edit::~photo_edit()
 {
     delete ui;
+}
+
+int photo_edit::get_count_of_changed_images()
+{
+    QFile in("../my_project/count_changed_images.txt");
+    in.open(QIODevice::ReadOnly | QIODevice::Text);
+    QTextStream writeStream(&in);
+    writeStream>>count_of_changed_images;
+    in.close();
+    return count_of_changed_images;
 }
 
 
@@ -228,6 +243,11 @@ void photo_edit::on_save_btn_clicked()
     {
         QString filename_save = "../my_project/edited/photo_" + QString::number(count_of_changed_images++)+".jpg";
         changed_img->save(filename_save);
+        QFile out("../my_project/count_changed_images.txt");
+        out.open(QIODevice::WriteOnly | QIODevice::Text);
+        QTextStream writeStream(&out);
+        writeStream<<count_of_changed_images;
+        out.close();
     }
     else
     {
@@ -459,6 +479,11 @@ void photo_edit::on_scale_button_clicked()
         changed_img->load("../my_project/edited/scaled_photo_" + QString::number(count_of_changed_images)+".jpg");
         original_img->load("../my_project/edited/scaled_photo_" + QString::number(count_of_changed_images)+".jpg");
         count_of_changed_images++;
+        QFile out("../my_project/count_changed_images.txt");
+        out.open(QIODevice::WriteOnly | QIODevice::Text);
+        QTextStream writeStream(&out);
+        writeStream<<count_of_changed_images;
+        out.close();
         QPixmap pix(QPixmap::fromImage(*changed_img));
         int w = pix.width();
         int h = pix.height();
@@ -486,7 +511,12 @@ void photo_edit::on_screen_button_clicked()
       ptr.setPen(QPen(Qt::red));
       ptr.drawRect(border);
 
-      pixmap.save("screen.png", 0, 100);
+      pixmap.save("../my_project/edited/screen_" + QString::number(count_of_changed_images++) + ".png", 0, 100);
+      QFile out("../my_project/count_changed_images.txt");
+      out.open(QIODevice::WriteOnly | QIODevice::Text);
+      QTextStream writeStream(&out);
+      writeStream<<count_of_changed_images;
+      out.close();
 }
 
 void photo_edit::on_draw_smile_button_clicked()

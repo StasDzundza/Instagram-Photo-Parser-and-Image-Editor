@@ -20,6 +20,7 @@ class photo_edit : public QMainWindow
 public:
     explicit photo_edit(QWidget *parent = nullptr);
     ~photo_edit();
+    int get_count_of_changed_images();
 
 private slots:
     void on_grayscale_button_clicked();
