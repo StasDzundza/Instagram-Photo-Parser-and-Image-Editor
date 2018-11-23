@@ -226,8 +226,7 @@ void photo_edit::on_save_btn_clicked()
 {
     if(changed_img)
     {
-        QString filename_save = "photo_number" + QString::number(count_of_changed_images)+".jpg";
-        count_of_changed_images++;
+        QString filename_save = "../my_project/edited/photo_" + QString::number(count_of_changed_images++)+".jpg";
         changed_img->save(filename_save);
     }
     else
@@ -349,8 +348,9 @@ void photo_edit::on_open_photo_button_clicked()
                                                       tr("Images (*.png *.xpm *.jpg)"));
      if(fileName!="")
      {
-
         original_img = new QImage(fileName);
+        current_photo.set_image(original_img);
+        current_photo.set_path(fileName);
         QPixmap pix(QPixmap::fromImage(*original_img));
         int w = pix.width();
         int h = pix.height();
@@ -455,9 +455,9 @@ void photo_edit::on_scale_button_clicked()
 {
     if(changed_img)
     {
-        changed_img->scaled(ui->x_point->value(),ui->y_point->value()).save("scaled_photo_number" + QString::number(count_of_changed_images)+".jpg");
-        changed_img->load("scaled_photo_number" + QString::number(count_of_changed_images)+".jpg");
-        original_img->load("scaled_photo_number" + QString::number(count_of_changed_images)+".jpg");
+        changed_img->scaled(ui->x_point->value(),ui->y_point->value()).save("../my_project/edited/scaled_photo_" + QString::number(count_of_changed_images)+".jpg");
+        changed_img->load("../my_project/edited/scaled_photo_" + QString::number(count_of_changed_images)+".jpg");
+        original_img->load("../my_project/edited/scaled_photo_" + QString::number(count_of_changed_images)+".jpg");
         count_of_changed_images++;
         QPixmap pix(QPixmap::fromImage(*changed_img));
         int w = pix.width();
@@ -591,13 +591,20 @@ void photo_edit::replyFinishedPhoto(QNetworkReply *reply)
             QByteArray data = reply->readAll();
             QImage *image =new QImage(QImage::fromData(data)) ;
             changed_img = original_img = image;
+            current_photo.set_image(original_img);
+            current_photo.set_path("from internet");
             QPixmap pix(QPixmap::fromImage(*changed_img));
             int w = pix.width();
             int h = pix.height();
             image_size = pix.size();
             ui->image->resize(w,h);
             ui->image->setPixmap(pix.scaled(w,h,Qt::KeepAspectRatio));
-            changed_img->save("../my_project/images/image" + QString::number(count_of_changed_images++) + ".jpg");
+            changed_img->save("../my_project/downloaded by reference/image" + QString::number(count_of_changed_images++) + ".jpg");
+
+            ui->x_point->setMaximum(image_size.width());
+            ui->y_point->setMaximum(image_size.height());
+            ui->x_point->setValue(image_size.width());
+            ui->y_point->setValue(image_size.height());
         }
     else
     {

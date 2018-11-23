@@ -8,6 +8,7 @@
 #include <QNetworkRequest>
 #include "paintscene.h"
 #include "photo_paint.h"
+#include "photo.h"
 namespace Ui {
 class photo_edit;
 }
@@ -69,6 +70,7 @@ private:
     int current_gray_level = 0;
     QImage *original_img = nullptr;
     QImage *changed_img = nullptr;
+    photo current_photo;
     QGraphicsScene *graphic_scene;
     QSize image_size;
     QString fileName;
