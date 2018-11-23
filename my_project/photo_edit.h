@@ -67,8 +67,8 @@ private:
     Ui::photo_edit *ui;
     int count_of_changed_images = 1;
     int current_gray_level = 0;
-    QImage *original_img;
-    QImage *changed_img;
+    QImage *original_img = nullptr;
+    QImage *changed_img = nullptr;
     QGraphicsScene *graphic_scene;
     QSize image_size;
     QString fileName;
@@ -82,9 +82,6 @@ private:
     QNetworkReply *reply_photo;
     QNetworkRequest request_photo;
     QNetworkAccessManager *manager_photo;
-
-
-
 };
 
 #endif // PHOTO_EDIT_H
