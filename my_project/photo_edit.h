@@ -6,6 +6,8 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QColor>
+#include <QString>
 #include "paintscene.h"
 #include "photo_paint.h"
 #include "photo.h"
@@ -61,17 +63,26 @@ private slots:
 
     void on_open_by_url_button_clicked();
 
+    void replyFinishedPhoto(QNetworkReply*);
+
+    void on_draw_border_button_clicked();
+
+    void on_border_color_clicked();
+
 signals:
     void paint_object(QImage *image);
-private slots:
-    void replyFinishedPhoto(QNetworkReply*);
+
 private:
     Ui::photo_edit *ui;
     int count_of_changed_images = 1;
     int current_gray_level = 0;
+
     QImage *original_img = nullptr;
     QImage *changed_img = nullptr;
+
     photo current_photo;
+    QColor current_color = Qt::red;
+
     QGraphicsScene *graphic_scene;
     QSize image_size;
     QString fileName;

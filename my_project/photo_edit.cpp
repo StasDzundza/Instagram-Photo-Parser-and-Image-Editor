@@ -3,6 +3,10 @@
 #include<QLabel>
 #include<QDebug>
 #include<QPainter>
+#include<QPen>
+#include<QColorDialog>
+#include<QPalette>
+#include<QColor>
 #include<QRgb>
 #include<QDir>
 #include<QFileDialog>
@@ -11,6 +15,7 @@
 #include<QTextStream>
 #include<QByteArray>
 
+#include<QStyle>
 photo_edit::photo_edit(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::photo_edit)
@@ -25,6 +30,8 @@ photo_edit::photo_edit(QWidget *parent) :
     }
 
     ui->gray_level_3->setMaximum(7);
+    ui->border_width->setMinimum(1);
+    ui->border_width->setMaximum(30);
     ui->transparency_level->setMaximum(2.5);
     ui->transparency_level->setMinimum(1.0);
     ui->transparency_level->setSingleStep(0.05);
@@ -503,6 +510,7 @@ void photo_edit::on_screen_button_clicked()
       this->render(&pixmap, QPoint(), QRegion(this->rect()));
       QPainter ptr(&pixmap);
 
+
       QRect border(0,0,this->width() - 1, this->height() - 1);
       //ptr.setBrush(QBrush(QColor(0,0,255,125)));
       ptr.drawRect(border);
@@ -525,8 +533,8 @@ void photo_edit::on_draw_smile_button_clicked()
     {
         QImage sourceImage;
 
-        int dx = (changed_img->width() - sourceImage.width())/2;
-        int dy = (changed_img->height() - sourceImage.height())/2;
+        int dx = (changed_img->width())/2;
+        int dy = (changed_img->height())/2;
 
         switch (ui->smile_list->currentIndex())
         {
@@ -640,4 +648,40 @@ void photo_edit::replyFinishedPhoto(QNetworkReply *reply)
     {
         ui->image->setText("Invalid reference");
     }
+}
+
+void photo_edit::on_draw_border_button_clicked()
+{
+    if(changed_img)
+    {
+        QPainter ptr(changed_img);
+        QRect border(0,0,changed_img->width() - 1, changed_img->height() - 1);
+        QPen pen;
+        pen.setColor(current_color);
+        pen.setWidth(ui->border_width->value());
+        ptr.setPen(pen);
+        ptr.drawRect(border);
+        QPixmap pix(QPixmap::fromImage(*changed_img));
+        int w = pix.width();
+        int h = pix.height();
+        image_size = pix.size();
+        ui->image->resize(w,h);
+        ui->image->setPixmap(pix.scaled(w,h,Qt::KeepAspectRatio));
+        changed_img->save("../my_project/edited/photo_" + QString::number(count_of_changed_images++) + ".jpg");
+        QFile out("../my_project/count_changed_images.txt");
+        out.open(QIODevice::WriteOnly | QIODevice::Text);
+        QTextStream writeStream(&out);
+        writeStream<<count_of_changed_images;
+        out.close();
+    }
+}
+
+void photo_edit::on_border_color_clicked()
+{
+    ui->border_color->setAutoFillBackground(true);
+    current_color = QColorDialog::getColor();
+    int red = current_color.red();
+    int green = current_color.green();
+    int blue = current_color.blue();
+    ui->border_color->setStyleSheet("background-color: rgb(" + QString::number(red) + ',' + QString::number(green) + ',' + QString::number(blue) + ')');
 }
