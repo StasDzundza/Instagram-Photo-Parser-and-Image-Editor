@@ -42,6 +42,8 @@ private slots:
 private:
     Ui::insta_parser *ui;
     void write_in_file_account_info(QString phrase,QString value,QString nickname);
+    void check_existing_accounts();
+    bool fill_acoount_info(instagram_account*account,QString path);
     static int count_images;
     QNetworkReply *reply;
     QNetworkRequest request;

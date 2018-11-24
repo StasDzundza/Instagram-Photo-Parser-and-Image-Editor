@@ -10,6 +10,7 @@ insta_parser::insta_parser(QWidget *parent) :
     ui(new Ui::insta_parser)
 {
     ui->setupUi(this);
+    check_existing_accounts();
     network_manager = new QNetworkAccessManager(this);
     network_manager_next_page = new QNetworkAccessManager(this);
     network_manager->setStrictTransportSecurityEnabled(true);
@@ -227,7 +228,14 @@ void insta_parser::get_biography(const QByteArray &byte, instagram_account *acco
     index = index + biography_finish.length();
     QString biography = byte.mid(start, finish - start);
     account->set_biography(biography);
-    write_in_file_account_info("Biography : ",biography,account->get_nickname());
+    if(biography == "")
+    {
+        write_in_file_account_info("Biography : ","none",account->get_nickname());
+    }
+    else
+    {
+        write_in_file_account_info("Biography : ",biography,account->get_nickname());
+    }
 }
 
 void insta_parser::get_id(const QByteArray &byte, instagram_account *account)
@@ -285,7 +293,6 @@ void insta_parser::send_request_to_next_page(QString next_page_URL)
     request_next_page.setUrl(QUrl(next_page_URL));
     network_manager_next_page->get(request_next_page);
 }
-
 
 void insta_parser::download_photos(const QByteArray &byte, instagram_account *account)
 {
@@ -380,10 +387,17 @@ void insta_parser::replyFinished(QNetworkReply *reply)
     accounts.push_back(account);
 
     get_user_name(byte,account);
+
+    QFile in("../my_project/Accounts.txt");
+    in.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append);
+    QTextStream writeStream(&in);
+    writeStream<< account->get_nickname()  +'\n';
+    in.close();
+
     download_photos(byte,account);
-    get_count_likes(byte,account);
-    get_count_comments(byte,account);
     get_page_info(byte,account);
+    get_count_likes(byte,account);
+    get_count_comments(byte,account);    
     get_biography(byte,account);
     get_id(byte,account);
     QString next_page_url  = get_next_page_url(byte,account);
@@ -469,4 +483,65 @@ void insta_parser::write_in_file_account_info(QString phrase, QString value, QSt
     QTextStream writeStream2(&in2);
     writeStream2<<value +'\n';
     in2.close();
+}
+
+void insta_parser::check_existing_accounts()
+{
+    QFile in("../my_project/Accounts.txt");
+    if(in.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QTextStream writeStream(&in);
+        QString account_nickname;
+        while(!writeStream.atEnd())
+        {
+            writeStream>>account_nickname;
+            if(account_nickname !="")
+            {
+                instagram_account*account = new instagram_account;
+                if(fill_acoount_info(account,"../my_project/"+account_nickname+ "/AccountInfo(for_programmer).txt") == 1)
+                {
+                    accounts.push_back(account);
+                    QListWidgetItem *item = new QListWidgetItem;
+                    item->setText(account->get_nickname());
+                    ui->accounts_list->addItem(item);
+                }
+            }
+        }
+        in.close();
+    }
+    else
+    {
+        ui->status_line->setText("Cannot find file Accounts.txt");
+    }
+}
+
+bool insta_parser::fill_acoount_info(instagram_account *account, QString path)
+{
+    QString info;
+    QFile in(path);
+    if(in.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QTextStream writeStream(&in);
+        writeStream>>info;
+        account->set_nickname(info);
+        writeStream>>info;
+        account->set_count_followers(info.toInt());
+        writeStream>>info;
+        account->set_count_following(info.toInt());
+        writeStream>>info;
+        account->set_count_posts(info.toInt());
+        writeStream>>info;
+        account->set_count_likes(info.toInt());
+        writeStream>>info;
+        account->set_count_comments(info.toInt());
+        writeStream>>info;
+        account->set_biography(info);
+        writeStream>>info;
+        account->set_id(info);
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
 }
