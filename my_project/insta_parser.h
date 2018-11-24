@@ -41,6 +41,7 @@ private slots:
 
 private:
     Ui::insta_parser *ui;
+    void write_in_file_account_info(QString phrase,QString value,QString nickname);
     static int count_images;
     QNetworkReply *reply;
     QNetworkRequest request;

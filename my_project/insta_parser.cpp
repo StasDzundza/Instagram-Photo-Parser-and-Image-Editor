@@ -43,7 +43,12 @@ void insta_parser::get_user_name(const QByteArray &byte, instagram_account *acco
     Q_ASSERT(index > 0);
     f = index;
     index = index + username_finish.length();
-    account->set_nickname(byte.mid(s, f - s));
+    QString nickname = byte.mid(s, f - s);
+    account->set_nickname(nickname);
+    QDir dir("../my_project");
+    dir.mkdir(account->get_nickname());
+    current_nickname = account->get_nickname();
+    write_in_file_account_info("Nickname : ",nickname,nickname);
 }
 
 void insta_parser::get_count_likes(const QByteArray &byte, instagram_account *account)
@@ -52,6 +57,7 @@ void insta_parser::get_count_likes(const QByteArray &byte, instagram_account *ac
     int idx = 0, start = -1, finish = -1;
     QString RefStart = "\"edge_liked_by\":{\"count\":";
     QString RefFinish = "}";
+    QString likes;
     for (;;)
     {
         idx = byte.indexOf(RefStart, idx);
@@ -62,11 +68,12 @@ void insta_parser::get_count_likes(const QByteArray &byte, instagram_account *ac
         Q_ASSERT(idx > 0);
         finish = idx;
         idx = idx + RefFinish.length();
-        QString likes = byte.mid(start, finish - start);
+        likes = byte.mid(start, finish - start);
         count_likes+=likes.toInt();
-       // writeStream << ref + '\n';
      }
     account->set_count_likes(count_likes);
+
+    write_in_file_account_info("Count likes : ",QString::number(count_likes),account->get_nickname());
 }
 
 void insta_parser::get_count_comments(const QByteArray &byte, instagram_account *account)
@@ -75,6 +82,7 @@ void insta_parser::get_count_comments(const QByteArray &byte, instagram_account 
     int idx = 0, start = -1, finish = -1;
     QString RefStart = "\"edge_media_to_comment\":{\"count\":";
     QString RefFinish = "}";
+    QString comments;
     for (;;)
     {
         idx = byte.indexOf(RefStart, idx);
@@ -85,11 +93,11 @@ void insta_parser::get_count_comments(const QByteArray &byte, instagram_account 
         Q_ASSERT(idx > 0);
         finish = idx;
         idx = idx + RefFinish.length();
-        QString comments = byte.mid(start, finish - start);
+        comments = byte.mid(start, finish - start);
         count_comments+=comments.toInt();
-       // writeStream << ref + '\n';
      }
     account->set_count_comments(count_comments);
+    write_in_file_account_info("Count comments : ",QString::number(count_comments),account->get_nickname());
 }
 
 void insta_parser::get_page_info(const QByteArray &byte, instagram_account *account)
@@ -101,6 +109,7 @@ void insta_parser::get_page_info(const QByteArray &byte, instagram_account *acco
     int idx = 0, start = -1, finish = -1;
     QString followers_start = "<meta content=\"";
     QString followers_finish = " млн";
+    QString count_followers;
 
     QString following_start = ", ";
     QString following_finish = " ";
@@ -126,7 +135,7 @@ void insta_parser::get_page_info(const QByteArray &byte, instagram_account *acco
             Q_ASSERT(idx > 0);
             finish = idx;
             idx = idx + followers_finish.length();
-            QString count_followers = byte.mid(start, finish - start);
+            count_followers = byte.mid(start, finish - start);
             followers = count_followers.toInt();
             account->set_count_followers(followers);
         }
@@ -134,7 +143,7 @@ void insta_parser::get_page_info(const QByteArray &byte, instagram_account *acco
         {
             finish = temp_idx2;
             idx = temp_idx2 + followers_finish.length();
-            QString count_followers = byte.mid(start, finish - start);
+            count_followers = byte.mid(start, finish - start);
             double fol = count_followers.toDouble();
             fol*=1000;
             followers = fol;
@@ -146,7 +155,7 @@ void insta_parser::get_page_info(const QByteArray &byte, instagram_account *acco
     {
         finish = temp_idx;
         idx = temp_idx + followers_finish.length();
-        QString count_followers = byte.mid(start, finish - start);
+        count_followers = byte.mid(start, finish - start);
         double fol = count_followers.toDouble();
         fol*=1000000;
         followers = fol;
@@ -195,6 +204,9 @@ void insta_parser::get_page_info(const QByteArray &byte, instagram_account *acco
     }
     posts = correct_count_posts.toInt();
     account->set_count_posts(posts);
+    write_in_file_account_info("Count followers : ",count_followers,account->get_nickname());
+    write_in_file_account_info("Count following : ",correct_count_following,account->get_nickname());
+    write_in_file_account_info("Count posts : ",correct_count_posts,account->get_nickname());
 
 }
 
@@ -215,6 +227,7 @@ void insta_parser::get_biography(const QByteArray &byte, instagram_account *acco
     index = index + biography_finish.length();
     QString biography = byte.mid(start, finish - start);
     account->set_biography(biography);
+    write_in_file_account_info("Biography : ",biography,account->get_nickname());
 }
 
 void insta_parser::get_id(const QByteArray &byte, instagram_account *account)
@@ -234,6 +247,7 @@ void insta_parser::get_id(const QByteArray &byte, instagram_account *account)
     index = index + id_finish.length();
     QString id = byte.mid(start, finish - start);
     account->set_id(id);
+    write_in_file_account_info("Account id : ",id,account->get_nickname());
 }
 
 QString insta_parser::get_next_page_url(const QByteArray &byte, instagram_account *account)
@@ -279,11 +293,8 @@ void insta_parser::download_photos(const QByteArray &byte, instagram_account *ac
     QString RefStart = "\"username\":\"" + account->get_nickname() +"\"},\"thumbnail_src\":\"";
     QString RefFinish = "\"";
 
-    QDir dir("../my_project");
-    dir.mkdir(account->get_nickname());
-    current_nickname = account->get_nickname();
-    QFile out("../my_project/" + account->get_nickname() + "/" + "AccountInfo.txt");
-    out.open(QIODevice::WriteOnly | QIODevice::Text);
+    QFile out("../my_project/" + account->get_nickname() + "/" + "PhotoReferences.txt");
+    out.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append);
     QTextStream writeStream(&out);
 
     for (;;)
@@ -310,9 +321,9 @@ void insta_parser::download_photos_on_the_next_page(const QByteArray &byte, inst
     int idx = 0, start = -1, finish = -1;
     QString RefStart = "\"thumbnail_src\":\"";
     QString RefFinish = "\"";
-    //QFile out("../my_project/" + account->get_nickname() + "/" + "AccountInfo.txt");
-    //out.open(QIODevice::WriteOnly | QIODevice::Text);
-    //QTextStream writeStream(&out);
+    QFile out("../my_project/" + account->get_nickname() + "/" + "PhotoReferences.txt");
+    out.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append);
+    QTextStream writeStream(&out);
 
     for (;;)
     {
@@ -326,11 +337,11 @@ void insta_parser::download_photos_on_the_next_page(const QByteArray &byte, inst
         idx = idx + RefFinish.length();
         QString ref = byte.mid(start, finish - start);
 
-        //writeStream << ref + '\n';
+        writeStream << ref + '\n';
 
         save_photo(ref);
      }
-    //out.close();
+    out.close();
 }
 
 void insta_parser::on_get_info_button_clicked()
@@ -443,4 +454,19 @@ void insta_parser::replyFinishedNextPage(QNetworkReply *reply_next_page)
         send_request_to_next_page(next_page_url);
     }
     reply_next_page->deleteLater();
+}
+
+void insta_parser::write_in_file_account_info(QString phrase, QString value, QString nickname)
+{
+    QFile in("../my_project/" + nickname + "/" + "AccountInfo(for_user).txt");
+    in.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append);
+    QTextStream writeStream(&in);
+    writeStream<< phrase <<value  +'\n';
+    in.close();
+
+    QFile in2("../my_project/" + nickname + "/" + "AccountInfo(for_programmer).txt");
+    in2.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append);
+    QTextStream writeStream2(&in2);
+    writeStream2<<value +'\n';
+    in2.close();
 }
