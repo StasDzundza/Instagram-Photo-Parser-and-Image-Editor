@@ -1,5 +1,6 @@
 #include "insta_parser.h"
 #include "ui_insta_parser.h"
+#include <iostream>
 #include <QListWidget>
 #include <QListWidgetItem>
 #include <QFile>
@@ -10,7 +11,9 @@ insta_parser::insta_parser(QWidget *parent) :
     ui(new Ui::insta_parser)
 {
     ui->setupUi(this);
-    check_existing_accounts();
+    this->setFixedHeight(696);
+    this->setFixedWidth(1096);
+    check_existing_accounts();//check accounts from last program start
     network_manager = new QNetworkAccessManager(this);
     network_manager_next_page = new QNetworkAccessManager(this);
     network_manager->setStrictTransportSecurityEnabled(true);
@@ -370,48 +373,57 @@ void insta_parser::on_get_info_button_clicked()
 
 void insta_parser::replyFinished(QNetworkReply *reply)
 {
-
-    qDebug()<<"reply finished";
-    ui->status->setText("");
-
-    QFile fileOut("fileout.txt");
-    fileOut.open(QIODevice::WriteOnly);
-    QByteArray byte = reply->readAll();
-
-    fileOut.write(byte);
-    fileOut.close(); // Закрываем fileout.txt
-
-    //parsing
-    instagram_account*account = new instagram_account;
-    current_account = account;
-    accounts.push_back(account);
-
-    get_user_name(byte,account);
-
-    QFile in("../my_project/Accounts.txt");
-    in.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append);
-    QTextStream writeStream(&in);
-    writeStream<< account->get_nickname()  +'\n';
-    in.close();
-
-    download_photos(byte,account);
-    get_page_info(byte,account);
-    get_count_likes(byte,account);
-    get_count_comments(byte,account);    
-    get_biography(byte,account);
-    get_id(byte,account);
-    QString next_page_url  = get_next_page_url(byte,account);
-    if(next_page_url !="")
+    if (reply->error() == QNetworkReply::NoError)
     {
-        send_request_to_next_page(next_page_url);
+        qDebug()<<"reply finished";
+        ui->status->setText("");
+
+        QFile fileOut("fileout.txt");
+        fileOut.open(QIODevice::WriteOnly);
+        QByteArray byte = reply->readAll();
+
+        fileOut.write(byte);
+        fileOut.close(); // Закрываем fileout.txt
+
+        //parsing
+        instagram_account*account = new instagram_account;
+        current_account = account;
+        accounts.push_back(account);
+
+        get_user_name(byte,account);
+
+        QFile out("../my_project/Accounts.txt");
+        out.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append);
+        QTextStream writeStream(&out);
+        writeStream<< account->get_nickname()  +'\n';
+        out.close();
+
+        download_photos(byte,account);
+        get_page_info(byte,account);
+        out.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append);
+        QTextStream writeStream2(&out);
+        writeStream2<<"Information about only first twelve photos\n";
+        out.close();
+        get_count_likes(byte,account);
+        get_count_comments(byte,account);
+        get_biography(byte,account);
+        get_id(byte,account);
+        QString next_page_url  = get_next_page_url(byte,account);
+        if(next_page_url !="")
+        {
+            send_request_to_next_page(next_page_url);
+        }
+
+        QListWidgetItem *item = new QListWidgetItem;
+        item->setText(account->get_nickname());
+        ui->accounts_list->addItem(item);
+
+        ui->status->setText("Finished");
     }
-
-    QListWidgetItem *item = new QListWidgetItem;
-    item->setText(account->get_nickname());
-    ui->accounts_list->addItem(item);
-
-    qDebug()<<"finished";
-    ui->status->setText("Finished");
+    else
+    {
+        ui->status_line->setText("Error");
+    }
 
 }
 
@@ -515,6 +527,16 @@ void insta_parser::check_existing_accounts()
     }
 }
 
+void insta_parser::swap_list_items(int index1, int index2)
+{
+    QListWidgetItem *item1 = ui->accounts_list->item(index1);
+    QListWidgetItem *item2 = ui->accounts_list->item(index2);
+    QString tmp;
+    tmp = item1->text();
+    item1->setText(item2->text());
+    item2->setText(tmp);
+}
+
 bool insta_parser::fill_acoount_info(instagram_account *account, QString path)
 {
     QString info;
@@ -543,5 +565,129 @@ bool insta_parser::fill_acoount_info(instagram_account *account, QString path)
     else
     {
         return 0;
+    }
+}
+
+void insta_parser::on_sort_button_clicked()
+{
+    int size = ui->accounts_list->count();
+    if(ui->sort_type->currentText() == "Followers")
+    {
+        for(int i = 0; i < size ;i++)
+        {
+            for(int j = 1; j < size-i;j++)
+            {
+                if(accounts.at(j)->get_count_followers() > accounts.at(j-1)->get_count_followers())
+                {
+                    std::swap(accounts[j],accounts[j-1]);
+                    swap_list_items(j,j-1);
+                }
+            }
+        }
+    }
+    else if(ui->sort_type->currentText() == "Following")
+    {
+        for(int i = 0; i < size ;i++)
+        {
+            for(int j = 1; j < size-i;j++)
+            {
+                if(accounts.at(j)->get_count_following() > accounts.at(j-1)->get_count_following())
+                {
+                    std::swap(accounts[j],accounts[j-1]);
+                    swap_list_items(j,j-1);
+                }
+            }
+        }
+    }
+    else if(ui->sort_type->currentText() == "Posts")
+    {
+        for(int i = 0; i < size ;i++)
+        {
+            for(int j = 1; j < size-i;j++)
+            {
+                if(accounts.at(j)->get_count_posts() > accounts.at(j-1)->get_count_posts())
+                {
+                    std::swap(accounts[j],accounts[j-1]);
+                    swap_list_items(j,j-1);
+                }
+            }
+        }
+    }
+    else if(ui->sort_type->currentText() == "Likes")
+    {
+        for(int i = 0; i < size ;i++)
+        {
+            for(int j = 1; j < size-i;j++)
+            {
+                if(accounts.at(j)->get_count_likes() > accounts.at(j-1)->get_count_likes())
+                {
+                    std::swap(accounts[j],accounts[j-1]);
+                    swap_list_items(j,j-1);
+                }
+            }
+        }
+    }
+    else
+    {
+        for(int i = 0; i < size ;i++)
+        {
+            for(int j = 1; j < size-i;j++)
+            {
+                if(accounts.at(j)->get_count_comments() > accounts.at(j-1)->get_count_comments())
+                {
+                    std::swap(accounts[j],accounts[j-1]);
+                    swap_list_items(j,j-1);
+                }
+            }
+        }
+    }
+
+}
+
+void insta_parser::on_delete_account_button_clicked()
+{
+    if(!accounts.empty())
+    {
+        QList<QListWidgetItem *> items = ui->accounts_list->selectedItems();
+        if(!items.isEmpty())
+        {
+            QString nickname;
+            //remove frome list
+            int index = ui->accounts_list->currentRow();
+            delete ui->accounts_list->currentItem();
+            instagram_account*account = accounts[index];
+            nickname = accounts[index]->get_nickname();
+            delete account;
+            //remove from vector
+            auto it = accounts.begin();
+            it = it+index;
+            accounts.erase(it);
+            //remove from file
+            QFile in("../my_project/Accounts.txt");
+            QFile out("../my_project/AccountsTemp.txt");
+            out.open(QIODevice::WriteOnly | QIODevice::Text);
+            if(in.open(QIODevice::ReadOnly | QIODevice::Text))
+            {
+                QString current_nick;
+                QTextStream writeStreamIn(&in);
+                QTextStream writeStreamOut(&out);
+                while(!writeStreamIn.atEnd())
+                {
+                    writeStreamIn>>current_nick;
+                    if(current_nick!=nickname && current_nick!="")
+                    {
+                        writeStreamOut << current_nick + '\n';
+                    }
+                }
+                in.close();
+                out.close();
+                remove("../my_project/Accounts.txt");
+                rename("../my_project/AccountsTemp.txt","../my_project/Accounts.txt");
+            }
+            else
+            {
+                ui->status_line->setText("Unexpected error");
+            }
+        }
     }
 }

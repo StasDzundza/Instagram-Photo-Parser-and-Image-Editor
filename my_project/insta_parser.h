@@ -8,6 +8,7 @@
 #include <QNetworkAccessManager>
 #include <QByteArray>
 #include <QString>
+#include <QListWidgetItem>
 #include "instagram_account.h"
 
 namespace Ui {
@@ -38,11 +39,15 @@ private slots:
     void replyFinishedPhoto(QNetworkReply*);
     void on_show_info_button_clicked();
     void replyFinishedNextPage(QNetworkReply*);
+    void on_sort_button_clicked();
+
+    void on_delete_account_button_clicked();
 
 private:
     Ui::insta_parser *ui;
     void write_in_file_account_info(QString phrase,QString value,QString nickname);
     void check_existing_accounts();
+    void swap_list_items(int index1, int index2);
     bool fill_acoount_info(instagram_account*account,QString path);
     static int count_images;
     QNetworkReply *reply;
