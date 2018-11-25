@@ -69,6 +69,8 @@ private slots:
 
     void on_border_color_clicked();
 
+    void on_brightness_button_clicked();
+
 signals:
     void paint_object(QImage *image);
 

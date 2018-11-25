@@ -32,6 +32,9 @@ photo_edit::photo_edit(QWidget *parent) :
     ui->gray_level_3->setMaximum(7);
     ui->border_width->setMinimum(1);
     ui->border_width->setMaximum(30);
+    ui->brightness_value->setMinimum(-255);
+    ui->brightness_value->setMaximum(255);
+    ui->brightness_value->setValue(0);
     ui->transparency_level->setMaximum(2.5);
     ui->transparency_level->setMinimum(1.0);
     ui->transparency_level->setSingleStep(0.05);
@@ -674,6 +677,10 @@ void photo_edit::on_draw_border_button_clicked()
         writeStream<<count_of_changed_images;
         out.close();
     }
+    else
+    {
+        ui->image->setText("There is no photo! Open it!");
+    }
 }
 
 void photo_edit::on_border_color_clicked()
@@ -684,4 +691,36 @@ void photo_edit::on_border_color_clicked()
     int green = current_color.green();
     int blue = current_color.blue();
     ui->border_color->setStyleSheet("background-color: rgb(" + QString::number(red) + ',' + QString::number(green) + ',' + QString::number(blue) + ')');
+}
+
+void photo_edit::on_brightness_button_clicked()
+{
+    int brightness = ui->brightness_value->value();
+    for(int i = 0; i < image_size.height();i++)
+    {
+        for(int j = 0; j < image_size.width();j++)
+        {
+            QColor clrCurrent( changed_img->pixel( j, i ) );
+            int r,g,b;
+            r = clrCurrent.red();
+            g = clrCurrent.green();
+            b = clrCurrent.blue();
+            r+=brightness;
+            g+=brightness;
+            b+=brightness;
+            if(r>255){r = 255;}
+            if(g>255){g = 255;}
+            if(b>255){b = 255;}
+            if(r<0){r = 0;}
+            if(g<0){g = 0;}
+            if(b<0){b = 0;}
+            changed_img->setPixel(j,i,qRgb(r,g,b));
+        }
+    }
+    QPixmap pix(QPixmap::fromImage(*changed_img));
+    int w = pix.width();
+    int h = pix.height();
+    image_size = pix.size();
+    ui->image->resize(w,h);
+    ui->image->setPixmap(pix.scaled(w,h,Qt::KeepAspectRatio));
 }
