@@ -25,8 +25,8 @@ public:
     void download_photos(const QByteArray&byte, instagram_account *account);
     void download_photos_on_the_next_page(const QByteArray &byte, instagram_account *account);
     void get_user_name(const QByteArray&byte,instagram_account*account);
-    void get_count_likes(const QByteArray&byte,instagram_account*account);
-    void get_count_comments(const QByteArray&byte,instagram_account*account);
+    void get_count_likes(const QByteArray&byte,instagram_account*account,bool is_next_page);
+    void get_count_comments(const QByteArray&byte,instagram_account*account,bool is_next_page);
     void get_page_info(const QByteArray&byte,instagram_account*account);
     void get_biography(const QByteArray&byte,instagram_account*account);
     void get_id(const QByteArray&byte,instagram_account*account);
@@ -54,8 +54,8 @@ private:
     QNetworkRequest request;
     QNetworkAccessManager *network_manager;
 
-    QNetworkRequest request_next_page;
-    QNetworkAccessManager *network_manager_next_page;
+    //QNetworkRequest request_next_page;
+    //QNetworkAccessManager *network_manager_next_page;
 
     QNetworkReply *reply_photo;
     QNetworkRequest request_photo;

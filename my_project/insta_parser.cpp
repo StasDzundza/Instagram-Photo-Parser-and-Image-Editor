@@ -15,12 +15,11 @@ insta_parser::insta_parser(QWidget *parent) :
     this->setFixedWidth(1096);
     check_existing_accounts();//check accounts from last program start
     network_manager = new QNetworkAccessManager(this);
-    network_manager_next_page = new QNetworkAccessManager(this);
-    network_manager->setStrictTransportSecurityEnabled(true);
+    //network_manager_next_page = new QNetworkAccessManager(this);
     network_manager->setStrictTransportSecurityEnabled(true);
 
     connect(network_manager, SIGNAL(finished(QNetworkReply*)),this, SLOT(replyFinished(QNetworkReply*)));
-    connect(network_manager_next_page, SIGNAL(finished(QNetworkReply*)),this, SLOT(replyFinishedNextPage(QNetworkReply*)));
+    //connect(network_manager_next_page, SIGNAL(finished(QNetworkReply*)),this, SLOT(replyFinishedNextPage(QNetworkReply*)));
 
     manager_photo = new QNetworkAccessManager(this);
     manager_photo->setStrictTransportSecurityEnabled(true);
@@ -52,15 +51,24 @@ void insta_parser::get_user_name(const QByteArray &byte, instagram_account *acco
     QDir dir("../my_project");
     dir.mkdir(account->get_nickname());
     current_nickname = account->get_nickname();
-    write_in_file_account_info("Nickname : ",nickname,nickname);
 }
 
-void insta_parser::get_count_likes(const QByteArray &byte, instagram_account *account)
+void insta_parser::get_count_likes(const QByteArray &byte, instagram_account *account,bool is_next_page)
 {
     int count_likes = 0;
     int idx = 0, start = -1, finish = -1;
-    QString RefStart = "\"edge_liked_by\":{\"count\":";
-    QString RefFinish = "}";
+    QString RefStart;
+    QString RefFinish;
+    if(is_next_page)
+    {
+        RefStart = "\"edge_media_preview_like\":{\"count\":";
+        RefFinish = ",";
+    }
+    else
+    {
+        RefStart = "\"edge_liked_by\":{\"count\":";
+        RefFinish = "}";
+    }
     QString likes;
     for (;;)
     {
@@ -76,16 +84,22 @@ void insta_parser::get_count_likes(const QByteArray &byte, instagram_account *ac
         count_likes+=likes.toInt();
      }
     account->set_count_likes(count_likes);
-
-    write_in_file_account_info("Count likes : ",QString::number(count_likes),account->get_nickname());
 }
 
-void insta_parser::get_count_comments(const QByteArray &byte, instagram_account *account)
+void insta_parser::get_count_comments(const QByteArray &byte, instagram_account *account,bool is_next_page)
 {
     int count_comments = 0;
     int idx = 0, start = -1, finish = -1;
     QString RefStart = "\"edge_media_to_comment\":{\"count\":";
-    QString RefFinish = "}";
+    QString RefFinish;
+    if(is_next_page)
+    {
+        RefFinish = ",";
+    }
+    else
+    {
+        RefFinish = "}";
+    }
     QString comments;
     for (;;)
     {
@@ -101,7 +115,6 @@ void insta_parser::get_count_comments(const QByteArray &byte, instagram_account 
         count_comments+=comments.toInt();
      }
     account->set_count_comments(count_comments);
-    write_in_file_account_info("Count comments : ",QString::number(count_comments),account->get_nickname());
 }
 
 void insta_parser::get_page_info(const QByteArray &byte, instagram_account *account)
@@ -208,10 +221,6 @@ void insta_parser::get_page_info(const QByteArray &byte, instagram_account *acco
     }
     posts = correct_count_posts.toInt();
     account->set_count_posts(posts);
-    write_in_file_account_info("Count followers : ",count_followers,account->get_nickname());
-    write_in_file_account_info("Count following : ",correct_count_following,account->get_nickname());
-    write_in_file_account_info("Count posts : ",correct_count_posts,account->get_nickname());
-
 }
 
 void insta_parser::get_biography(const QByteArray &byte, instagram_account *account)
@@ -231,14 +240,6 @@ void insta_parser::get_biography(const QByteArray &byte, instagram_account *acco
     index = index + biography_finish.length();
     QString biography = byte.mid(start, finish - start);
     account->set_biography(biography);
-    if(biography == "")
-    {
-        write_in_file_account_info("Biography : ","none",account->get_nickname());
-    }
-    else
-    {
-        write_in_file_account_info("Biography : ",biography,account->get_nickname());
-    }
 }
 
 void insta_parser::get_id(const QByteArray &byte, instagram_account *account)
@@ -258,7 +259,6 @@ void insta_parser::get_id(const QByteArray &byte, instagram_account *account)
     index = index + id_finish.length();
     QString id = byte.mid(start, finish - start);
     account->set_id(id);
-    write_in_file_account_info("Account id : ",id,account->get_nickname());
 }
 
 QString insta_parser::get_next_page_url(const QByteArray &byte, instagram_account *account)
@@ -290,11 +290,23 @@ QString insta_parser::get_next_page_url(const QByteArray &byte, instagram_accoun
 
 void insta_parser::send_request_to_next_page(QString next_page_URL)
 {
-    qDebug()<<next_page_URL;
+    //qDebug()<<next_page_URL;
+    QNetworkAccessManager*network_manager_next_page = new QNetworkAccessManager;
+    connect(network_manager_next_page, SIGNAL(finished(QNetworkReply*)),this, SLOT(replyFinishedNextPage(QNetworkReply*)));
+    QNetworkRequest*request_next_page = new QNetworkRequest;
     QSslConfiguration sslConfiguration(QSslConfiguration::defaultConfiguration());
-    request_next_page.setSslConfiguration(sslConfiguration);
-    request_next_page.setUrl(QUrl(next_page_URL));
-    network_manager_next_page->get(request_next_page);
+    request_next_page->setSslConfiguration(sslConfiguration);
+    request_next_page->setUrl(QUrl(next_page_URL));
+    request_next_page->setRawHeader(QByteArray("Content-Type"), QByteArray("application/json"));
+    request_next_page->setRawHeader(QByteArray("Accept"), QByteArray("*/*"));
+    request_next_page->setRawHeader(QByteArray("Accept-Language"), QByteArray("uk-UA,uk;q=0.9,ru;q=0.8,en-US;q=0.7,en;q=0.6"));
+    request_next_page->setRawHeader(QByteArray("Cookie"), QByteArray("mcd=3; mid=W9xLywALAAGg7OoEbY0nfoKohew7; csrftoken=3aGyihYEWBtwmIRi4N2ehWDgcAs6GK4e; ds_user_id=4749051444; rur=ATN; shbid=247; shbts=1543613568.5991576; sessionid=IGSC40734e174da7dfed5472b3c86e9c833c4750945968c8bf3a7bb3d9aba212270f%3AlmJZSseKFTWZfSJqMHKD0GRN9kK0umgT%3A%7B%22_auth_user_id%22%3A4749051444%2C%22_auth_user_backend%22%3A%22accounts.backends.CaseInsensitiveModelBackend%22%2C%22_auth_user_hash%22%3A%22%22%2C%22_platform%22%3A4%2C%22_token_ver%22%3A2%2C%22_token%22%3A%224749051444%3AtrRse8wH1gMOIeKxKSysHDkjA1aK2wPX%3Aaa69cd1831af31c4a01c2a1c24131d640fdce8d95dc37b264622b90d5950b081%22%2C%22last_refreshed%22%3A1543613568.6006875038%7D; urlgen=\"{\"91.202.131.116\": 13032\054 \"91.202.130.116\": 13032\054 \"91.202.128.1\": 13032}:1gT6b5:WQwapvKaDEaXzCJaa1_W1oLZDH0\""));
+    //request_next_page->setRawHeader(QByteArray("Refer"), QByteArray("https://www.instagram.com/ivannazavadetska/"));
+    //request_next_page->setRawHeader(QByteArray("x-instagram-gis"), QByteArray("63fc162934f563ce68356277c11aae5c"));
+    request_next_page->setRawHeader(QByteArray("x-requested-with"), QByteArray("XMLHttpRequest"));
+    request_next_page->setRawHeader(QByteArray("User-Agent"), QByteArray("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36"));
+
+    network_manager_next_page->get(*request_next_page);
 }
 
 void insta_parser::download_photos(const QByteArray &byte, instagram_account *account)
@@ -368,6 +380,10 @@ void insta_parser::on_get_info_button_clicked()
     QSslConfiguration sslConfiguration(QSslConfiguration::defaultConfiguration());
     request.setSslConfiguration(sslConfiguration);
     request.setUrl(QUrl(URL));
+    request.setRawHeader("Cache-Control", "no-cache");
+    request.setRawHeader("Content-Type", "text/html");
+    request.setRawHeader("Accept", "*/*");
+    request.setRawHeader("User-Agent", "MyOwnBrowser 1.0");
     network_manager->get(request);
 }
 
@@ -375,7 +391,7 @@ void insta_parser::replyFinished(QNetworkReply *reply)
 {
     if (reply->error() == QNetworkReply::NoError)
     {
-        qDebug()<<"reply finished";
+        //qDebug()<<"reply finished";
         ui->status->setText("");
 
         QFile fileOut("fileout.txt");
@@ -400,25 +416,22 @@ void insta_parser::replyFinished(QNetworkReply *reply)
 
         download_photos(byte,account);
         get_page_info(byte,account);
-        out.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append);
-        QTextStream writeStream2(&out);
-        writeStream2<<"Information about only first twelve photos\n";
-        out.close();
-        get_count_likes(byte,account);
-        get_count_comments(byte,account);
+
+        get_count_likes(byte,account,false);
+        get_count_comments(byte,account,false);
         get_biography(byte,account);
         get_id(byte,account);
+
         QString next_page_url  = get_next_page_url(byte,account);
+
         if(next_page_url !="")
         {
-            send_request_to_next_page(next_page_url);
+          send_request_to_next_page(next_page_url);
         }
 
         QListWidgetItem *item = new QListWidgetItem;
         item->setText(account->get_nickname());
         ui->accounts_list->addItem(item);
-
-        ui->status->setText("Finished");
     }
     else
     {
@@ -441,6 +454,8 @@ void insta_parser::replyFinishedPhoto(QNetworkReply *reply)
 
 void insta_parser::save_photo(QString &ref)
 {
+    //QNetworkAccessManager*manager = new QNetworkAccessManager;
+    //QNetworkRequest*req = new QNetworkRequest;
     QSslConfiguration sslConfiguration(QSslConfiguration::defaultConfiguration());
     request_photo.setSslConfiguration(sslConfiguration);
     request_photo.setUrl(QUrl(ref));
@@ -469,17 +484,42 @@ void insta_parser::on_show_info_button_clicked()
 
 void insta_parser::replyFinishedNextPage(QNetworkReply *reply_next_page)
 {
-    QByteArray byte = reply_next_page->readAll();
-    qDebug()<<byte;
-    //get_count_comments(byte,current_account);
-    //get_count_likes(byte,current_account);
-    download_photos_on_the_next_page(byte,current_account);
-    QString next_page_url  = get_next_page_url(byte,current_account);
-    if(next_page_url !="")
+    if(reply_next_page->error())
     {
-        send_request_to_next_page(next_page_url);
+        qDebug() << "ERROR";
+        qDebug() << reply_next_page->errorString();
     }
-    reply_next_page->deleteLater();
+    else
+    {
+        QByteArray byte = reply_next_page->readAll();
+        get_count_comments(byte,current_account,true);
+        get_count_likes(byte,current_account,true);
+
+        download_photos_on_the_next_page(byte,current_account);
+        QString next_page_url  = get_next_page_url(byte,current_account);
+        reply_next_page->deleteLater();
+        if(next_page_url !="")
+        {
+            send_request_to_next_page(next_page_url);
+            ui->status->setText("Finished");
+            write_in_file_account_info("Nickname : ",current_account->get_nickname(),current_account->get_nickname());
+            write_in_file_account_info("Count followers : ",QString::number(current_account->get_count_followers()),current_account->get_nickname());
+            write_in_file_account_info("Count following : ",QString::number(current_account->get_count_following()),current_account->get_nickname());
+            write_in_file_account_info("Count posts : ",QString::number(current_account->get_count_posts()),current_account->get_nickname());
+            write_in_file_account_info("Count comments : ",QString::number(current_account->get_count_comments()),current_account->get_nickname());
+            write_in_file_account_info("Count comments : ",QString::number(current_account->get_count_likes()),current_account->get_nickname());
+            if(current_account->get_biography() == "")
+            {
+                write_in_file_account_info("Biography : ","none",current_account->get_nickname());
+            }
+            else
+            {
+                write_in_file_account_info("Biography : ",current_account->get_biography(),current_account->get_nickname());
+            }
+            write_in_file_account_info("Account id : ",current_account->get_id(),current_account->get_nickname());
+        }
+    }
+
 }
 
 void insta_parser::write_in_file_account_info(QString phrase, QString value, QString nickname)

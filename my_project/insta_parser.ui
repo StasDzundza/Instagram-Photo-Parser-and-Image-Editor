@@ -180,21 +180,6 @@
      </widget>
     </item>
     <item>
-     <widget class="QLabel" name="label">
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-        <underline>true</underline>
-       </font>
-      </property>
-      <property name="text">
-       <string>Information about only first twelve photos</string>
-      </property>
-     </widget>
-    </item>
-    <item>
      <widget class="QLabel" name="lbl_likes">
       <property name="text">
        <string>Count Likes :</string>
@@ -210,7 +195,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>545</x>
@@ -235,6 +220,19 @@
      </widget>
     </item>
    </layout>
+  </widget>
+  <widget class="QLabel" name="ref">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>10</y>
+     <width>841</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>TextLabel</string>
+   </property>
   </widget>
  </widget>
  <resources/>

@@ -487,7 +487,6 @@ void photo_edit::on_scale_button_clicked()
     {
         changed_img->scaled(ui->x_point->value(),ui->y_point->value()).save("../my_project/edited/scaled_photo_" + QString::number(count_of_changed_images)+".jpg");
         changed_img->load("../my_project/edited/scaled_photo_" + QString::number(count_of_changed_images)+".jpg");
-        original_img->load("../my_project/edited/scaled_photo_" + QString::number(count_of_changed_images)+".jpg");
         count_of_changed_images++;
         QFile out("../my_project/count_changed_images.txt");
         out.open(QIODevice::WriteOnly | QIODevice::Text);
@@ -510,24 +509,22 @@ void photo_edit::on_scale_button_clicked()
 void photo_edit::on_screen_button_clicked()
 {
     QPixmap pixmap(this->size());
-      this->render(&pixmap, QPoint(), QRegion(this->rect()));
-      QPainter ptr(&pixmap);
+    this->render(&pixmap, QPoint(), QRegion(this->rect()));
+    QPainter ptr(&pixmap);
 
 
-      QRect border(0,0,this->width() - 1, this->height() - 1);
-      //ptr.setBrush(QBrush(QColor(0,0,255,125)));
-      ptr.drawRect(border);
+    QRect border(0,0,this->width() - 1, this->height() - 1);
+    ptr.drawRect(border);
 
-     // ptr.setBrush(QBrush());
-      ptr.setPen(QPen(Qt::red));
-      ptr.drawRect(border);
+    ptr.setPen(QPen(Qt::red));
+    ptr.drawRect(border);
 
-      pixmap.save("../my_project/edited/screen_" + QString::number(count_of_changed_images++) + ".png", 0, 100);
-      QFile out("../my_project/count_changed_images.txt");
-      out.open(QIODevice::WriteOnly | QIODevice::Text);
-      QTextStream writeStream(&out);
-      writeStream<<count_of_changed_images;
-      out.close();
+    pixmap.save("../my_project/edited/screen_" + QString::number(count_of_changed_images++) + ".png", 0, 100);
+    QFile out("../my_project/count_changed_images.txt");
+    out.open(QIODevice::WriteOnly | QIODevice::Text);
+    QTextStream writeStream(&out);
+    writeStream<<count_of_changed_images;
+    out.close();
 }
 
 void photo_edit::on_draw_smile_button_clicked()

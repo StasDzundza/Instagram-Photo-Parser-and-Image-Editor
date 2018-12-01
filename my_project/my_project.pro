@@ -8,6 +8,10 @@ QT       += core gui widgets svg network
 
 TARGET = my_project
 TEMPLATE = app
+LIBS += "./release/Qt5Network.dll"
+LIBS += "./release/Qt5Core.dll"
+LIBS += "./release/Qt5Gui.dll"
+LIBS += "./release/Qt5Widgets.dll"
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
