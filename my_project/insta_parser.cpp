@@ -5,6 +5,7 @@
 #include <QListWidgetItem>
 #include <QFile>
 #include <QDir>
+#include <QFont>
 
 insta_parser::insta_parser(QWidget *parent) :
     QDialog(parent),
@@ -397,8 +398,10 @@ void insta_parser::replyFinished(QNetworkReply *reply)
 {
     if (reply->error() == QNetworkReply::NoError)
     {
-        //qDebug()<<"reply finished";
-        ui->status->setText("");
+        ui->status->setText("  Parsing...");
+        QFont font;
+        font.setBold(true);
+        ui->status->setFont(font);
 
         QFile fileOut("fileout.txt");
         fileOut.open(QIODevice::WriteOnly);
@@ -528,8 +531,8 @@ void insta_parser::replyFinishedNextPage(QNetworkReply *reply_next_page)
         }
         else
         {
-            qDebug()<<"Finished";
-            ui->status->setText("Finished");
+            qDebug()<<"  Finished";
+            ui->status->setText("  Finished");
             write_in_file_account_info("Nickname : ",current_account->get_nickname(),current_account->get_nickname());
             write_in_file_account_info("Count followers : ",QString::number(current_account->get_count_followers()),current_account->get_nickname());
             write_in_file_account_info("Count following : ",QString::number(current_account->get_count_following()),current_account->get_nickname());

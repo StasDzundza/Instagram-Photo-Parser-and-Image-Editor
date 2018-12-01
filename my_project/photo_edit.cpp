@@ -14,8 +14,8 @@
 #include<vector>
 #include<QTextStream>
 #include<QByteArray>
-
 #include<QStyle>
+
 photo_edit::photo_edit(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::photo_edit)
@@ -44,6 +44,10 @@ photo_edit::photo_edit(QWidget *parent) :
     manager_photo = new QNetworkAccessManager(this);
     manager_photo->setStrictTransportSecurityEnabled(true);
     connect(manager_photo, SIGNAL(finished(QNetworkReply*)),this, SLOT(replyFinishedPhoto(QNetworkReply*)));
+
+    connect(ui->image,SIGNAL(doubleClicked(const QModelIndex& )),this,SLOT(on_double_click()));
+    ui->draw_smile_button->setEnabled(false);
+
 }
 
 
@@ -529,12 +533,9 @@ void photo_edit::on_screen_button_clicked()
 
 void photo_edit::on_draw_smile_button_clicked()
 {
-    if(changed_img)
+    if(changed_img && ui->draw_smile_button->isEnabled())
     {
         QImage sourceImage;
-
-        int dx = (changed_img->width())/2;
-        int dy = (changed_img->height())/2;
 
         switch (ui->smile_list->currentIndex())
         {
@@ -554,6 +555,8 @@ void photo_edit::on_draw_smile_button_clicked()
                 break;
             }
         }
+        int dx = double_click_x_pos - ui->image->x() - sourceImage.width()/2;
+        int dy = double_click_y_pos - ui->image->y() - sourceImage.height()/2;
         QPainter p(changed_img);
         p.drawImage(dx, dy, sourceImage);
         p.end();
@@ -692,32 +695,61 @@ void photo_edit::on_border_color_clicked()
 
 void photo_edit::on_brightness_button_clicked()
 {
-    int brightness = ui->brightness_value->value();
-    for(int i = 0; i < image_size.height();i++)
+    if(changed_img)
     {
-        for(int j = 0; j < image_size.width();j++)
+        int brightness = ui->brightness_value->value();
+        for(int i = 0; i < image_size.height();i++)
         {
-            QColor clrCurrent( changed_img->pixel( j, i ) );
-            int r,g,b;
-            r = clrCurrent.red();
-            g = clrCurrent.green();
-            b = clrCurrent.blue();
-            r+=brightness;
-            g+=brightness;
-            b+=brightness;
-            if(r>255){r = 255;}
-            if(g>255){g = 255;}
-            if(b>255){b = 255;}
-            if(r<0){r = 0;}
-            if(g<0){g = 0;}
-            if(b<0){b = 0;}
-            changed_img->setPixel(j,i,qRgb(r,g,b));
+            for(int j = 0; j < image_size.width();j++)
+            {
+                QColor clrCurrent( changed_img->pixel( j, i ) );
+                int r,g,b;
+                r = clrCurrent.red();
+                g = clrCurrent.green();
+                b = clrCurrent.blue();
+                r+=brightness;
+                g+=brightness;
+                b+=brightness;
+                if(r>255){r = 255;}
+                if(g>255){g = 255;}
+                if(b>255){b = 255;}
+                if(r<0){r = 0;}
+                if(g<0){g = 0;}
+                if(b<0){b = 0;}
+                changed_img->setPixel(j,i,qRgb(r,g,b));
+            }
         }
+        QPixmap pix(QPixmap::fromImage(*changed_img));
+        int w = pix.width();
+        int h = pix.height();
+        image_size = pix.size();
+        ui->image->resize(w,h);
+        ui->image->setPixmap(pix.scaled(w,h,Qt::KeepAspectRatio));
     }
-    QPixmap pix(QPixmap::fromImage(*changed_img));
-    int w = pix.width();
-    int h = pix.height();
-    image_size = pix.size();
-    ui->image->resize(w,h);
-    ui->image->setPixmap(pix.scaled(w,h,Qt::KeepAspectRatio));
+    else
+    {
+        ui->image->setText("There is no photo! Open it!");
+    }
+}
+
+void photo_edit::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    this->double_click_x_pos = event->x();
+    this->double_click_y_pos = event->y();
+    on_double_click();
+}
+
+void photo_edit::on_double_click()
+{
+    ui->event->setText(QString::number(double_click_x_pos) + "----" + QString::number(double_click_y_pos));
+    ui->draw_smile_button->setEnabled(true);
+    if(double_click_x_pos > ui->image->x() && double_click_x_pos < ui->image->x() + ui->image->width() && double_click_y_pos > ui->image->y() && double_click_y_pos < ui->image->y() + ui->image->height())
+    {
+        ui->draw_smile_button->setEnabled(true);
+    }
+    else
+    {
+        ui->draw_smile_button->setEnabled(false);
+    }
+
 }

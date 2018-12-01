@@ -315,6 +315,19 @@
      </item>
     </layout>
    </widget>
+   <widget class="QLabel" name="event">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>890</y>
+      <width>901</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

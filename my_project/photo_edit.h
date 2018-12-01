@@ -8,6 +8,7 @@
 #include <QNetworkRequest>
 #include <QColor>
 #include <QString>
+#include <QMouseEvent>
 #include "paintscene.h"
 #include "photo_paint.h"
 #include "photo.h"
@@ -71,8 +72,13 @@ private slots:
 
     void on_brightness_button_clicked();
 
+    void mouseDoubleClickEvent(QMouseEvent*event);
+
+    void on_double_click();
+
 signals:
     void paint_object(QImage *image);
+    void double_click(QString&str);
 
 private:
     Ui::photo_edit *ui;
@@ -98,6 +104,9 @@ private:
     QNetworkReply *reply_photo;
     QNetworkRequest request_photo;
     QNetworkAccessManager *manager_photo;
+
+    int double_click_x_pos;
+    int double_click_y_pos;
 };
 
 #endif // PHOTO_EDIT_H
