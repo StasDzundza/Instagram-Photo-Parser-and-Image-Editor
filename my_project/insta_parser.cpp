@@ -264,7 +264,7 @@ void insta_parser::get_id(const QByteArray &byte, instagram_account *account)
 QString insta_parser::get_next_page_url(const QByteArray &byte, instagram_account *account)
 {
     int index = 0, start = -1, finish = -1;
-    QString end_cursor_start = "\"has_next_page\":true,\"end_cursor\":\"", end_cursor_finish = "==\"";
+    QString end_cursor_start = "{\"count\":" + QString::number(account->get_count_posts()) + ",\"page_info\":{\"has_next_page\":true,\"end_cursor\":\"", end_cursor_finish = "==\"";
 
 
     index = byte.indexOf(end_cursor_start, index);
@@ -428,6 +428,25 @@ void insta_parser::replyFinished(QNetworkReply *reply)
         {
           send_request_to_next_page(next_page_url);
         }
+        else
+        {
+            write_in_file_account_info("Nickname : ",account->get_nickname(),account->get_nickname());
+            write_in_file_account_info("Count followers : ",QString::number(account->get_count_followers()),account->get_nickname());
+            write_in_file_account_info("Count following : ",QString::number(account->get_count_following()),account->get_nickname());
+            write_in_file_account_info("Count posts : ",QString::number(account->get_count_posts()),account->get_nickname());
+            write_in_file_account_info("Count comments : ",QString::number(account->get_count_comments()),account->get_nickname());
+            write_in_file_account_info("Count comments : ",QString::number(account->get_count_likes()),account->get_nickname());
+
+            if(account->get_biography() == "")
+            {
+                write_in_file_account_info("Biography : ","none",account->get_nickname());
+            }
+            else
+            {
+                write_in_file_account_info("Biography : ",account->get_biography(),account->get_nickname());
+            }
+            write_in_file_account_info("Account id : ",account->get_id(),account->get_nickname());
+        }
 
         QListWidgetItem *item = new QListWidgetItem;
         item->setText(account->get_nickname());
@@ -437,7 +456,6 @@ void insta_parser::replyFinished(QNetworkReply *reply)
     {
         ui->status_line->setText("Error");
     }
-
 }
 
 void insta_parser::replyFinishedPhoto(QNetworkReply *reply)
@@ -497,17 +515,22 @@ void insta_parser::replyFinishedNextPage(QNetworkReply *reply_next_page)
 
         download_photos_on_the_next_page(byte,current_account);
         QString next_page_url  = get_next_page_url(byte,current_account);
-        reply_next_page->deleteLater();
+        reply_next_page->destroyed();
         if(next_page_url !="")
         {
             send_request_to_next_page(next_page_url);
+        }
+        else
+        {
+            qDebug()<<"Finished";
             ui->status->setText("Finished");
             write_in_file_account_info("Nickname : ",current_account->get_nickname(),current_account->get_nickname());
             write_in_file_account_info("Count followers : ",QString::number(current_account->get_count_followers()),current_account->get_nickname());
             write_in_file_account_info("Count following : ",QString::number(current_account->get_count_following()),current_account->get_nickname());
             write_in_file_account_info("Count posts : ",QString::number(current_account->get_count_posts()),current_account->get_nickname());
+            write_in_file_account_info("Count likes : ",QString::number(current_account->get_count_likes()),current_account->get_nickname());
             write_in_file_account_info("Count comments : ",QString::number(current_account->get_count_comments()),current_account->get_nickname());
-            write_in_file_account_info("Count comments : ",QString::number(current_account->get_count_likes()),current_account->get_nickname());
+
             if(current_account->get_biography() == "")
             {
                 write_in_file_account_info("Biography : ","none",current_account->get_nickname());

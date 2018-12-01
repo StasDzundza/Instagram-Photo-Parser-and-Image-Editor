@@ -221,19 +221,6 @@
     </item>
    </layout>
   </widget>
-  <widget class="QLabel" name="ref">
-   <property name="geometry">
-    <rect>
-     <x>220</x>
-     <y>10</y>
-     <width>841</width>
-     <height>51</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>TextLabel</string>
-   </property>
-  </widget>
  </widget>
  <resources/>
  <connections/>
