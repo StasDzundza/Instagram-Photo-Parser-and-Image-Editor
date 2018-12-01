@@ -153,7 +153,13 @@ void insta_parser::get_page_info(const QByteArray &byte, instagram_account *acco
             finish = idx;
             idx = idx + followers_finish.length();
             count_followers = byte.mid(start, finish - start);
-            followers = count_followers.toInt();
+            QString correct_followers_count;
+            for(int i = 0; i < count_followers.size();i++)
+            {
+                if(count_followers[i] != ',')
+                    correct_followers_count+=count_followers[i];
+            }
+            followers = correct_followers_count.toInt();
             account->set_count_followers(followers);
         }
         else
