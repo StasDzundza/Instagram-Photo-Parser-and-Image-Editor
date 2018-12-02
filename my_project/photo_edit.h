@@ -34,8 +34,6 @@ private slots:
 
     void on_swap_colors_button_clicked();
 
-    void on_add_text_button_clicked();
-
     void on_to_ascii_button_clicked();
 
     void on_save_btn_clicked();
@@ -74,11 +72,10 @@ private slots:
 
     void mouseDoubleClickEvent(QMouseEvent*event);
 
-    void on_double_click();
+    void on_ghost_button_clicked();
 
 signals:
     void paint_object(QImage *image);
-    void double_click(QString&str);
 
 private:
     Ui::photo_edit *ui;
@@ -105,8 +102,8 @@ private:
     QNetworkRequest request_photo;
     QNetworkAccessManager *manager_photo;
 
-    int double_click_x_pos;
-    int double_click_y_pos;
+    int double_click_x_pos = -1;
+    int double_click_y_pos = -1;
 };
 
 #endif // PHOTO_EDIT_H

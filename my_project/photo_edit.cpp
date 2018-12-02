@@ -15,6 +15,7 @@
 #include<QTextStream>
 #include<QByteArray>
 #include<QStyle>
+#include<QMessageBox>
 
 photo_edit::photo_edit(QWidget *parent) :
     QMainWindow(parent),
@@ -22,7 +23,7 @@ photo_edit::photo_edit(QWidget *parent) :
 {
     ui->setupUi(this);
     this->showMaximized();
-
+    this->setMinimumSize(this->size());
     get_count_of_changed_images();
     if(count_of_changed_images == 0)
     {
@@ -44,10 +45,6 @@ photo_edit::photo_edit(QWidget *parent) :
     manager_photo = new QNetworkAccessManager(this);
     manager_photo->setStrictTransportSecurityEnabled(true);
     connect(manager_photo, SIGNAL(finished(QNetworkReply*)),this, SLOT(replyFinishedPhoto(QNetworkReply*)));
-
-    connect(ui->image,SIGNAL(doubleClicked(const QModelIndex& )),this,SLOT(on_double_click()));
-    ui->draw_smile_button->setEnabled(false);
-
 }
 
 
@@ -161,36 +158,6 @@ void photo_edit::on_swap_colors_button_clicked()
                 changed_img->setPixel(j,i,qRgb(clrCurrent.green(),clrCurrent.blue(),clrCurrent.red()));
             }
         }
-        QPixmap pix(QPixmap::fromImage(*changed_img));
-        int w = pix.width();
-        int h = pix.height();
-        image_size = pix.size();
-        ui->image->resize(w,h);
-        ui->image->setPixmap(pix.scaled(w,h,Qt::KeepAspectRatio));
-    }
-    else
-    {
-        ui->image->setText("There is no photo! Open it!");
-    }
-}
-
-void photo_edit::on_add_text_button_clicked()
-{
-    if(changed_img)
-    {
-        QPainter painter;
-        painter.begin(changed_img);
-        painter.setFont(QFont("Tahoma", 12, QFont::Bold));
-        painter.setPen(QPen(Qt::red));
-        QPen pen;
-        QColor c;
-        //c.setGreen(255);
-        //c.setRed(255);
-        pen.setColor(c);
-        //painter.setPen(pen);
-        painter.drawText(changed_img->rect(), Qt::AlignCenter, QString("Text on photo"));
-        painter.end();
-
         QPixmap pix(QPixmap::fromImage(*changed_img));
         int w = pix.width();
         int h = pix.height();
@@ -533,43 +500,56 @@ void photo_edit::on_screen_button_clicked()
 
 void photo_edit::on_draw_smile_button_clicked()
 {
-    if(changed_img && ui->draw_smile_button->isEnabled())
+    if(double_click_x_pos == -1 && double_click_y_pos == -1)
     {
-        QImage sourceImage;
-
-        switch (ui->smile_list->currentIndex())
+        QMessageBox::information(this,"Information","Firstly you should double click on the place,where you want to draw smile and than press Draw Smile button");
+        return;
+    }
+    if(double_click_x_pos > ui->image->x() && double_click_x_pos < ui->image->x() + ui->image->width() && double_click_y_pos > ui->image->y() && double_click_y_pos < ui->image->y() + ui->image->height())
+    {
+        if(changed_img)
         {
-            case 0:
+            QImage sourceImage;
+
+            switch (ui->smile_list->currentIndex())
             {
-                sourceImage.load(":/smiles/smiles/128smile1.png");
-                break;
+                case 0:
+                {
+                    sourceImage.load(":/smiles/smiles/128smile1.png");
+                    break;
+                }
+                case 1:
+                {
+                    sourceImage.load(":/smiles/smiles/128smile2.png");
+                    break;
+                }
+                case 2:
+                {
+                    sourceImage.load(":/smiles/smiles/128smile3.png");
+                    break;
+                }
             }
-            case 1:
-            {
-                sourceImage.load(":/smiles/smiles/128smile2.png");
-                break;
-            }
-            case 2:
-            {
-                sourceImage.load(":/smiles/smiles/128smile3.png");
-                break;
-            }
+            int dx = double_click_x_pos - ui->image->x() - sourceImage.width()/2;
+            int dy = double_click_y_pos - ui->image->y() - sourceImage.height()/2;
+            QPainter p(changed_img);
+            p.drawImage(dx, dy, sourceImage);
+            p.end();
+            QPixmap pix(QPixmap::fromImage(*changed_img));
+            int w = pix.width();
+            int h = pix.height();
+            image_size = pix.size();
+            ui->image->resize(w,h);
+            ui->image->setPixmap(pix.scaled(w,h,Qt::KeepAspectRatio));
         }
-        int dx = double_click_x_pos - ui->image->x() - sourceImage.width()/2;
-        int dy = double_click_y_pos - ui->image->y() - sourceImage.height()/2;
-        QPainter p(changed_img);
-        p.drawImage(dx, dy, sourceImage);
-        p.end();
-        QPixmap pix(QPixmap::fromImage(*changed_img));
-        int w = pix.width();
-        int h = pix.height();
-        image_size = pix.size();
-        ui->image->resize(w,h);
-        ui->image->setPixmap(pix.scaled(w,h,Qt::KeepAspectRatio));
+        else
+        {
+            ui->image->setText("There is no photo! Open it!");
+        }
     }
     else
     {
-        ui->image->setText("There is no photo! Open it!");
+        QMessageBox::information(this,"Information","You should double click on the area,where is your image!");
+        return;
     }
 }
 
@@ -650,6 +630,7 @@ void photo_edit::replyFinishedPhoto(QNetworkReply *reply)
     else
     {
         ui->image->setText("Invalid reference");
+        changed_img = original_img = nullptr;
     }
 }
 
@@ -670,12 +651,6 @@ void photo_edit::on_draw_border_button_clicked()
         image_size = pix.size();
         ui->image->resize(w,h);
         ui->image->setPixmap(pix.scaled(w,h,Qt::KeepAspectRatio));
-        changed_img->save("../my_project/edited/photo_" + QString::number(count_of_changed_images++) + ".jpg");
-        QFile out("../my_project/count_changed_images.txt");
-        out.open(QIODevice::WriteOnly | QIODevice::Text);
-        QTextStream writeStream(&out);
-        writeStream<<count_of_changed_images;
-        out.close();
     }
     else
     {
@@ -736,20 +711,31 @@ void photo_edit::mouseDoubleClickEvent(QMouseEvent *event)
 {
     this->double_click_x_pos = event->x();
     this->double_click_y_pos = event->y();
-    on_double_click();
 }
 
-void photo_edit::on_double_click()
+void photo_edit::on_ghost_button_clicked()
 {
-    ui->event->setText(QString::number(double_click_x_pos) + "----" + QString::number(double_click_y_pos));
-    ui->draw_smile_button->setEnabled(true);
-    if(double_click_x_pos > ui->image->x() && double_click_x_pos < ui->image->x() + ui->image->width() && double_click_y_pos > ui->image->y() && double_click_y_pos < ui->image->y() + ui->image->height())
+    if(changed_img)
     {
-        ui->draw_smile_button->setEnabled(true);
+        for(int k = 0;k < 5;k++)
+        {
+            for(int i = 0; i < image_size.height();i++)
+            {
+                for(int j = 0; j < image_size.width();j++)
+                {
+                    QColor clrCurrent( changed_img->pixel( j, i ) );
+                    double r,g,b;
+                    r = ((double)clrCurrent.red() * 0.393 + (double)clrCurrent.green() * 0.769 + (double)clrCurrent.blue() * 0.189 ) / 1.351;
+                    g = ((double)clrCurrent.red() * 0.349 + (double)clrCurrent.green() * 0.686 + (double)clrCurrent.blue() * 0.168 ) / 1.351;
+                    b = ((double)clrCurrent.red() * 0.272 + (double)clrCurrent.green() * 0.534 + (double)clrCurrent.blue() * 0.131 ) / 1.351;
+                    changed_img->setPixel(j,i,qRgb(r,g,b));
+                }
+            }
+        }
+        on_negative_button_clicked();
     }
     else
     {
-        ui->draw_smile_button->setEnabled(false);
+        ui->image->setText("There is no photo! Open it!");
     }
-
 }
